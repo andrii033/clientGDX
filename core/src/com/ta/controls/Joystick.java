@@ -1,4 +1,4 @@
-package com.ta;
+package com.ta.controls;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

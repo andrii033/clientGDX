@@ -1,4 +1,4 @@
-package com.ta;
+package com.ta.data;
 
 public class User {
     private String username;

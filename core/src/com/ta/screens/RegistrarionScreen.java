@@ -1,4 +1,4 @@
-package com.ta;
+package com.ta.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -11,17 +11,23 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.ta.ClientGDX;
+import com.ta.auth.UserService;
+import com.ta.data.User;
 
-public class LoginScreen extends InputAdapter implements Screen {
+public class RegistrarionScreen extends InputAdapter implements Screen {
     private Stage stage;
     private Skin skin;
     private TextField usernameField;
     private TextField passwordField;
-    private TextButton loginButton;
+    private TextField emailField;
+    private TextButton registerButton;
     private Label messageLabel;
     private UserService userService;
+    private ClientGDX game;
 
-    public LoginScreen() {
+    public RegistrarionScreen(ClientGDX game) {
+        this.game = game;
         userService = new UserService();
     }
 
@@ -30,43 +36,53 @@ public class LoginScreen extends InputAdapter implements Screen {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         Label usernameLabel = new Label("Username:", skin);
-        usernameLabel.setPosition(100, 250);
+        usernameLabel.setPosition(100, 300);
         stage.addActor(usernameLabel);
 
         usernameField = new TextField("", skin);
-        usernameField.setPosition(200, 250);
+        usernameField.setPosition(200, 300);
         stage.addActor(usernameField);
 
         Label passwordLabel = new Label("Password:", skin);
-        passwordLabel.setPosition(100, 200);
+        passwordLabel.setPosition(100, 250);
         stage.addActor(passwordLabel);
 
         passwordField = new TextField("", skin);
-        passwordField.setPosition(200, 200);
+        passwordField.setPosition(200, 250);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
         stage.addActor(passwordField);
 
-        loginButton = new TextButton("Login", skin);
-        loginButton.setPosition(200, 150);
-        stage.addActor(loginButton);
+        Label emailLabel = new Label("Email:", skin);
+        emailLabel.setPosition(100, 200);
+        stage.addActor(emailLabel);
+
+        emailField = new TextField("", skin);
+        emailField.setPosition(200, 200);
+        stage.addActor(emailField);
+
+        registerButton = new TextButton("Register", skin);
+        registerButton.setPosition(200, 150);
+        stage.addActor(registerButton);
 
         messageLabel = new Label("", skin);
         messageLabel.setPosition(100, 100);
         stage.addActor(messageLabel);
 
-        loginButton.addListener(new ClickListener() {
+        registerButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 String username = usernameField.getText();
                 String password = passwordField.getText();
+                String email = emailField.getText();
                 User user = new User();
                 user.setUsername(username);
                 user.setPassword(password);
-                userService.signIn(user);
+                user.setEmail(email);
+                userService.createUser(user);
             }
         });
     }
@@ -74,17 +90,17 @@ public class LoginScreen extends InputAdapter implements Screen {
     @Override
     public void render(float delta) {
 
-        Gdx.gl.glClearColor(0, 1, 0, 1);
+        Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         stage.act(delta);
         stage.draw();
-
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);    }
+
+    }
 
     @Override
     public void pause() {
@@ -103,8 +119,7 @@ public class LoginScreen extends InputAdapter implements Screen {
 
     @Override
     public void dispose() {
-        stage.dispose();
-        skin.dispose();
+
     }
 
 }
