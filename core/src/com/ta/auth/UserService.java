@@ -1,6 +1,5 @@
 package com.ta.auth;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Net.HttpMethods;
 import com.badlogic.gdx.Net.HttpRequest;
@@ -9,12 +8,19 @@ import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.JsonWriter;
+import com.ta.ClientGDX;
 import com.ta.data.JwtAuthenticationResponse;
 import com.ta.data.User;
 import com.ta.screens.GameScreen;
+import com.ta.screens.LoginScreen;
 
 public class UserService {
     private String token;
+    private final ClientGDX game;
+
+    public UserService(ClientGDX game) {
+        this.game = game;
+    }
 
     public void createUser(User user) {
         Gdx.app.log("UserService", "Creating user");
@@ -48,7 +54,7 @@ public class UserService {
 
                 if (statusCode == 200 && serverResponse != null) {
                     Gdx.app.log("UserService", "User created successfully: " + serverResponse.getToken());
-                    // Handle successful response, e.g., update UI or application state
+                    Gdx.app.postRunnable(() -> game.setScreen(new LoginScreen(game)));
                 } else {
                     Gdx.app.log("UserService", "Failed to create user: " + statusCode);
                     Gdx.app.log("UserService", "Response: " + responseString);
@@ -68,7 +74,6 @@ public class UserService {
         });
         // The program continues executing immediately after sending the request
     }
-
 
     public void signIn(User user) {
         Gdx.app.log("UserService", "Signing in");
@@ -94,7 +99,7 @@ public class UserService {
                     token = jsonValue.getString("token");
                     Gdx.app.log("UserService", "Signed in successfully, token: " + token);
                     // Navigate to main screen
-                    ((Game) Gdx.app.getApplicationListener()).setScreen(new GameScreen());
+                    Gdx.app.postRunnable(() -> game.setScreen(new GameScreen()));
                 } else {
                     Gdx.app.log("UserService", "Failed to sign in: " + statusCode);
                     Gdx.app.log("UserService", "Response: " + httpResponse.getResultAsString());

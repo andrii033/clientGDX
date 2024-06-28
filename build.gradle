@@ -11,7 +11,7 @@ buildscript {
     dependencies {
         classpath 'org.docstr:gwt-gradle-plugin:1.1.29'
         classpath 'org.gretty:gretty:3.1.0'
-        classpath 'com.android.tools.build:gradle:8.1.2'
+        classpath 'com.android.tools.build:gradle:8.2.0'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.21'
         
 
@@ -30,6 +30,7 @@ allprojects {
         ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.2.1'
+        javaVersion = JavaVersion.VERSION_17
     }
 
     repositories {

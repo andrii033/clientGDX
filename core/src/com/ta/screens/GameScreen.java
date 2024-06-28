@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.ta.ClientGDX;
 import com.ta.data.User;
 import com.ta.auth.UserService;
 
@@ -20,6 +21,7 @@ public class GameScreen implements Screen {
     private Skin skin;
     private Stage stage;
     private TextButton button;
+    private ClientGDX game;
 
 
     @Override
@@ -27,7 +29,7 @@ public class GameScreen implements Screen {
         Gdx.app.log("GameScreen", "show");
         batch = new SpriteBatch();
         img = new Texture("badlogic.jpg");
-        userService = new UserService();
+        userService = new UserService(game);
 
         User user = new User();
         user.setUsername("player");

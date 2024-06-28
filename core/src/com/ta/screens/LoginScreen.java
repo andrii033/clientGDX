@@ -20,7 +20,7 @@ public class LoginScreen extends InputAdapter implements Screen {
 
     public LoginScreen(ClientGDX game) {
         this.game = game;
-        userService = new UserService();
+        userService = new UserService(game);
     }
 
     @Override

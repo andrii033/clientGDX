@@ -33,15 +33,22 @@ public class LoginSignupScreen extends InputAdapter implements Screen {
 
         loginButton = new TextButton("Login", skin);
         registerButton = new TextButton("Register", skin);
+        // Enlarge buttons
+        loginButton.setSize(200, 80); // Width = 200, Height = 80
+        registerButton.setSize(200, 80); // Width = 200, Height = 80
+
+        // Optionally, scale the font
+        loginButton.getLabel().setFontScale(1.5f);
+        registerButton.getLabel().setFontScale(1.5f);
 
         // Use a table to layout the buttons
         Table table = new Table();
         table.setFillParent(true);
         table.center(); // Center the table in the stage
 
-        // Add buttons to the table
-        table.add(loginButton).padBottom(10).row();
-        table.add(registerButton).padTop(10);
+        // Add buttons to the table with size parameters
+        table.add(loginButton).size(200, 80).padBottom(10).row();
+        table.add(registerButton).size(200, 80).padTop(10);
 
         // Add the table to the stage
         stage.addActor(table);

@@ -28,7 +28,7 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
 
     public RegistrarionScreen(ClientGDX game) {
         this.game = game;
-        userService = new UserService();
+        this.userService = new UserService(game); // Pass the game instance to UserService
     }
 
     @Override
@@ -44,6 +44,7 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
 
         usernameField = new TextField("", skin);
         usernameField.setPosition(200, 300);
+        usernameField.setSize(100, 100);
         stage.addActor(usernameField);
 
         Label passwordLabel = new Label("Password:", skin);
@@ -89,7 +90,6 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
 
     @Override
     public void render(float delta) {
-
         Gdx.gl.glClearColor(1, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
@@ -99,27 +99,21 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
     }
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
     }
 
     @Override
     public void dispose() {
-
     }
-
 }
