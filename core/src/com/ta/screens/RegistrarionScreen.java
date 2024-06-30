@@ -44,7 +44,7 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
 
         usernameField = new TextField("", skin);
         usernameField.setPosition(200, 300);
-        usernameField.setSize(100, 100);
+        usernameField.setSize(150, 30);
         stage.addActor(usernameField);
 
         Label passwordLabel = new Label("Password:", skin);

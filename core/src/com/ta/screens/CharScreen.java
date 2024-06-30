@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.ta.ClientGDX;
 import com.ta.game.Character;
 import com.ta.controls.Joystick;
 
@@ -17,6 +18,9 @@ public class CharScreen extends InputAdapter implements Screen {
     private Character character;
     private Joystick joystick;
     private boolean joystickInitialized;
+
+    public CharScreen(ClientGDX game, String token) {
+    }
 
     @Override
     public void show() {

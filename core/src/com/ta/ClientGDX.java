@@ -2,6 +2,8 @@ package com.ta;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.ta.screens.CharScreen;
+import com.ta.screens.GameScreen;
 import com.ta.screens.LoginSignupScreen;
 
 public class ClientGDX extends Game {
@@ -9,5 +11,6 @@ public class ClientGDX extends Game {
 	public void create() {
 		Gdx.app.log("ClientGDX", "create");
 		this.setScreen(new LoginSignupScreen(this));
+		//this.setScreen(new CharScreen());
 	}
 }
