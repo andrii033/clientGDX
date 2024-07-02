@@ -15,8 +15,6 @@ import com.ta.screens.CharScreen;
 import com.ta.screens.LoginScreen;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class UserService {
     private String token;
@@ -115,8 +113,9 @@ public class UserService {
                         JSONObject responseBody = new JSONObject(responseString);
                         token = responseBody.getString("token");
                         Gdx.app.log("UserService", "Signed in successfully, token: " + token);
+                        createCharacter();
                         // Navigate to main screen
-                        Gdx.app.postRunnable(() -> game.setScreen(new CharScreen(game, token)));
+                        Gdx.app.postRunnable(() -> game.setScreen(new CharScreen(game)));
                     } catch (Exception e) {
                         Gdx.app.log("UserService", "Failed to parse response JSON", e);
                     }
@@ -137,6 +136,69 @@ public class UserService {
             public void cancelled() {
                 Gdx.app.log("UserService", "Sign in cancelled");
                 // Update the message label or handle the error
+            }
+        });
+    }
+
+    public void createCharacter() {
+        Gdx.app.log("UserService", "Creating character");
+
+        // Create the JSON payload
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("characterName", "New Character");
+        } catch (Exception e) {
+            Gdx.app.log("UserService", "Failed to create JSON payload", e);
+            return;
+        }
+
+        String userJson = requestBody.toString();
+        Gdx.app.log("UserService", "JSON Payload: " + userJson);
+
+        // Create the HTTP request
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
+        httpRequest.setUrl("http://localhost:8080/character/create");
+        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Authorization", "Bearer " + token);
+        Gdx.app.log("UserService","token "+token);
+        httpRequest.setContent(userJson);
+
+        // Send the HTTP request
+        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(HttpResponse httpResponse) {
+                int statusCode = httpResponse.getStatus().getStatusCode();
+                String responseString = httpResponse.getResultAsString();
+                Gdx.app.log("UserService", "Response Status: " + statusCode);
+
+                if (statusCode == 200) {
+                    try {
+                        // Assuming the response is a JSON object with a "name" field
+                        JSONObject responseBody = new JSONObject(responseString);
+                        String characterName = responseBody.getString("name");
+                        Gdx.app.log("UserService", "Created character successfully: " + characterName);
+
+                        // Navigate to another screen or handle the response as needed
+                        Gdx.app.postRunnable(() -> {
+                            // Replace CharScreen with your desired screen
+                            // game.setScreen(new CharScreen(game));
+                        });
+                    } catch (Exception e) {
+                        Gdx.app.log("UserService", "Failed to parse response JSON", e);
+                    }
+                } else {
+                    Gdx.app.log("UserService", "Failed to create character, status code: " + statusCode);
+                }
+            }
+
+            @Override
+            public void failed(Throwable t) {
+                Gdx.app.log("UserService", "Failed to create character", t);
+            }
+
+            @Override
+            public void cancelled() {
+                Gdx.app.log("UserService", "Create character request cancelled");
             }
         });
     }

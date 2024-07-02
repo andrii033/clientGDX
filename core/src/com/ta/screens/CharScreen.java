@@ -19,7 +19,7 @@ public class CharScreen extends InputAdapter implements Screen {
     private Joystick joystick;
     private boolean joystickInitialized;
 
-    public CharScreen(ClientGDX game, String token) {
+    public CharScreen(ClientGDX game) {
     }
 
     @Override
