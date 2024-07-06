@@ -5,19 +5,21 @@ import com.badlogic.gdx.Net.HttpMethods;
 import com.badlogic.gdx.Net.HttpRequest;
 import com.badlogic.gdx.Net.HttpResponse;
 import com.badlogic.gdx.Net.HttpResponseListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.ta.ClientGDX;
+import com.ta.data.CharacterRequest;
 import com.ta.data.JwtAuthenticationResponse;
 import com.ta.data.User;
-import com.ta.screens.CharScreen;
 
+import com.ta.screens.ChooseCharacterScreen;
 import com.ta.screens.LoginScreen;
 import org.json.JSONObject;
 
 
 public class UserService {
-    private String token;
+    private static String token;
     private final ClientGDX game;
 
     public UserService(ClientGDX game) {
@@ -113,9 +115,9 @@ public class UserService {
                         JSONObject responseBody = new JSONObject(responseString);
                         token = responseBody.getString("token");
                         Gdx.app.log("UserService", "Signed in successfully, token: " + token);
-                        createCharacter();
+                        //createCharacter();
                         // Navigate to main screen
-                        Gdx.app.postRunnable(() -> game.setScreen(new CharScreen(game)));
+                        Gdx.app.postRunnable(() -> game.setScreen(new ChooseCharacterScreen(game)));
                     } catch (Exception e) {
                         Gdx.app.log("UserService", "Failed to parse response JSON", e);
                     }
@@ -140,6 +142,65 @@ public class UserService {
         });
     }
 
+
+    // In UserService.java
+
+    public void getCharacters(final ChooseCharacterScreen screen) {
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.GET);
+        httpRequest.setUrl("http://localhost:8080/character/choose");
+        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Authorization", "Bearer " + token);
+        Gdx.app.log("UserService getChar","token "+token);
+
+        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(HttpResponse httpResponse) {
+                String responseString = httpResponse.getResultAsString();
+                Json json = new Json();
+                Array<CharacterRequest> characters = json.fromJson(Array.class, CharacterRequest.class, responseString);
+                screen.setCharacters(characters);
+            }
+
+            @Override
+            public void failed(Throwable t) {
+                Gdx.app.log("UserService", "Failed to get characters", t);
+            }
+
+            @Override
+            public void cancelled() {
+                Gdx.app.log("UserService", "Cancelled get characters");
+            }
+        });
+    }
+
+
+    public void chooseCharacter(String id) {
+
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
+        httpRequest.setUrl("http://localhost:8080/character/choose");
+        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Authorization", "Bearer " + token);
+        httpRequest.setContent(id);
+
+        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(HttpResponse httpResponse) {
+                Gdx.app.log("UserService", "Character chosen successfully");
+            }
+
+            @Override
+            public void failed(Throwable t) {
+                Gdx.app.log("UserService", "Failed to choose character", t);
+            }
+
+            @Override
+            public void cancelled() {
+                Gdx.app.log("UserService", "Cancelled choose character");
+            }
+        });
+    }
+
+
     public void createCharacter() {
         Gdx.app.log("UserService", "Creating character");
 
@@ -160,7 +221,6 @@ public class UserService {
         httpRequest.setUrl("http://localhost:8080/character/create");
         httpRequest.setHeader("Content-Type", "application/json");
         httpRequest.setHeader("Authorization", "Bearer " + token);
-        Gdx.app.log("UserService","token "+token);
         httpRequest.setContent(userJson);
 
         // Send the HTTP request
@@ -181,7 +241,7 @@ public class UserService {
                         // Navigate to another screen or handle the response as needed
                         Gdx.app.postRunnable(() -> {
                             // Replace CharScreen with your desired screen
-                            // game.setScreen(new CharScreen(game));
+                            //game.setScreen(new ChooseCharacterScreen(game,"new name"));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("UserService", "Failed to parse response JSON", e);
@@ -202,4 +262,5 @@ public class UserService {
             }
         });
     }
+
 }

@@ -1,6 +1,4 @@
 buildscript {
-    
-
     repositories {
         mavenLocal()
         mavenCentral()
@@ -13,8 +11,6 @@ buildscript {
         classpath 'org.gretty:gretty:3.1.0'
         classpath 'com.android.tools.build:gradle:8.2.0'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.21'
-        
-
     }
 }
 
@@ -30,6 +26,7 @@ allprojects {
         ashleyVersion = '1.7.4'
         aiVersion = '1.8.2'
         gdxControllersVersion = '2.2.1'
+        lombokVersion = '1.18.24' // Add Lombok version
         javaVersion = JavaVersion.VERSION_17
     }
 
@@ -47,12 +44,10 @@ allprojects {
 project(":desktop") {
     apply plugin: "java-library"
 
-
     dependencies {
         implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        
     }
 }
 
@@ -68,7 +63,6 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86_64"
-        
     }
 }
 
@@ -76,14 +70,12 @@ project(":ios") {
     apply plugin: "java-library"
     apply plugin: "robovm"
 
-
     dependencies {
         implementation project(":core")
         api "com.mobidevelop.robovm:robovm-rt:$roboVMVersion"
         api "com.mobidevelop.robovm:robovm-cocoatouch:$roboVMVersion"
         api "com.badlogicgames.gdx:gdx-backend-robovm:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-ios"
-        
     }
 }
 
@@ -93,23 +85,22 @@ project(":html") {
     apply plugin: "war"
     apply plugin: "org.gretty"
 
-
     dependencies {
         implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion"
         api "com.badlogicgames.gdx:gdx:$gdxVersion:sources"
         api "com.badlogicgames.gdx:gdx-backend-gwt:$gdxVersion:sources"
         api "com.google.jsinterop:jsinterop-annotations:2.0.2:sources"
-        
     }
 }
 
 project(":core") {
     apply plugin: "java-library"
 
-
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         implementation 'org.json:json:20210307'
+        compileOnly "org.projectlombok:lombok:$lombokVersion" // Specify Lombok version
+        annotationProcessor "org.projectlombok:lombok:$lombokVersion" // Specify Lombok version
     }
 }

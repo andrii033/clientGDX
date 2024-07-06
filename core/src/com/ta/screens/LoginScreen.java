@@ -68,7 +68,6 @@ public class LoginScreen extends InputAdapter implements Screen {
                 user.setUsername(username);
                 user.setPassword(password);
                 userService.signIn(user);
-                //userService.createCharacter();
             }
         });
     }
