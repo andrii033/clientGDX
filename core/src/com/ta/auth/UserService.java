@@ -13,6 +13,7 @@ import com.ta.data.CharacterRequest;
 import com.ta.data.JwtAuthenticationResponse;
 import com.ta.data.User;
 
+import com.ta.screens.CharScreen;
 import com.ta.screens.ChooseCharacterScreen;
 import com.ta.screens.LoginScreen;
 import org.json.JSONObject;
@@ -185,7 +186,10 @@ public class UserService {
         Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
             @Override
             public void handleHttpResponse(HttpResponse httpResponse) {
-                Gdx.app.log("UserService", "Character chosen successfully");
+                Gdx.app.log("UserService", "Character chosen successfully "+httpResponse.getResultAsString());
+                Gdx.app.postRunnable(
+                        () -> game.setScreen(new CharScreen(game))
+                );
             }
 
             @Override
