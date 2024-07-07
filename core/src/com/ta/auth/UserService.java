@@ -5,11 +5,10 @@ import com.badlogic.gdx.Net.HttpMethods;
 import com.badlogic.gdx.Net.HttpRequest;
 import com.badlogic.gdx.Net.HttpResponse;
 import com.badlogic.gdx.Net.HttpResponseListener;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonWriter;
+import com.badlogic.gdx.utils.*;
 import com.ta.ClientGDX;
 import com.ta.data.CharacterRequest;
+import com.ta.data.CityRequest;
 import com.ta.data.JwtAuthenticationResponse;
 import com.ta.data.User;
 
@@ -17,6 +16,9 @@ import com.ta.screens.CharScreen;
 import com.ta.screens.ChooseCharacterScreen;
 import com.ta.screens.LoginScreen;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserService {
@@ -151,7 +153,7 @@ public class UserService {
         httpRequest.setUrl("http://localhost:8080/character/choose");
         httpRequest.setHeader("Content-Type", "application/json");
         httpRequest.setHeader("Authorization", "Bearer " + token);
-        Gdx.app.log("UserService getChar","token "+token);
+        Gdx.app.log("UserService getChar", "token " + token);
 
         Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
             @Override
@@ -176,7 +178,6 @@ public class UserService {
 
 
     public void chooseCharacter(String id) {
-
         HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
         httpRequest.setUrl("http://localhost:8080/character/choose");
         httpRequest.setHeader("Content-Type", "application/json");
@@ -186,10 +187,39 @@ public class UserService {
         Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
             @Override
             public void handleHttpResponse(HttpResponse httpResponse) {
-                Gdx.app.log("UserService", "Character chosen successfully "+httpResponse.getResultAsString());
-                Gdx.app.postRunnable(
-                        () -> game.setScreen(new CharScreen(game))
-                );
+
+                String responseString = httpResponse.getResultAsString();
+                Gdx.app.log("UserService", "Character chosen successfully " + responseString);
+
+                if (responseString == null || responseString.isEmpty()) {
+                    Gdx.app.log("UserService", "Empty or null response received.");
+                    return;
+                }
+
+                try {
+                    Json json = new Json();
+                    JsonReader jsonReader = new JsonReader();
+                    JsonValue jsonValue = jsonReader.parse(responseString);
+
+                    if (jsonValue == null) {
+                        Gdx.app.log("UserService", "Failed to parse JSON response.");
+                        return;
+                    }
+
+                    List<CityRequest> cityRequests = new ArrayList<>();
+                    for (JsonValue value : jsonValue) {
+                        CityRequest cityRequest = json.readValue(CityRequest.class, value);
+                        cityRequests.add(cityRequest);
+                    }
+
+//                    Gdx.app.log("UserService", "City chosen successfully " + cityRequests.get(0).getTerrainType());
+
+                    // Assuming you need to pass the response string to CharScreen
+                    Gdx.app.postRunnable(() -> game.setScreen(new CharScreen(game)));
+
+                } catch (Exception e) {
+                    Gdx.app.log("UserService", "Error parsing JSON response", e);
+                }
             }
 
             @Override

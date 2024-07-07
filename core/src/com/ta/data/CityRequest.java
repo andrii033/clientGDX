@@ -1,15 +1,48 @@
 package com.ta.data;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.HashMap;
 
-import java.util.Map;
-
-@Getter
-@Setter
 public class CityRequest {
-    private int xCoord;
-    private int yCoord;
     private String terrainType;
-    private Map<String,String> enemies;
+    private HashMap<String, String> enemies;
+    private int xcoord;
+    private int ycoord;
+
+    // No-argument constructor
+    public CityRequest() {
+        enemies = new HashMap<>();
+    }
+
+    // Getters and setters
+    public String getTerrainType() {
+        return terrainType;
+    }
+
+    public void setTerrainType(String terrainType) {
+        this.terrainType = terrainType;
+    }
+
+    public HashMap<String, String> getEnemies() {
+        return enemies;
+    }
+
+    public void setEnemies(HashMap<String, String> enemies) {
+        this.enemies = enemies;
+    }
+
+    public int getXcoord() {
+        return xcoord;
+    }
+
+    public void setXcoord(int xcoord) {
+        this.xcoord = xcoord;
+    }
+
+    public int getYcoord() {
+        return ycoord;
+    }
+
+    public void setYcoord(int ycoord) {
+        this.ycoord = ycoord;
+    }
 }
