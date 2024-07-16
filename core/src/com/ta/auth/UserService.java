@@ -12,9 +12,9 @@ import com.ta.data.CityRequest;
 import com.ta.data.JwtAuthenticationResponse;
 import com.ta.data.User;
 
-import com.ta.screens.CharScreen;
 import com.ta.screens.ChooseCharacterScreen;
 import com.ta.screens.LoginScreen;
+import com.ta.screens.MainCityScreen;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -212,10 +212,7 @@ public class UserService {
                         cityRequests.add(cityRequest);
                     }
 
-//                    Gdx.app.log("UserService", "City chosen successfully " + cityRequests.get(0).getTerrainType());
-
-                    // Assuming you need to pass the response string to CharScreen
-                    Gdx.app.postRunnable(() -> game.setScreen(new CharScreen(game)));
+                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game)));
 
                 } catch (Exception e) {
                     Gdx.app.log("UserService", "Error parsing JSON response", e);
@@ -296,5 +293,6 @@ public class UserService {
             }
         });
     }
+
 
 }

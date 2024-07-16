@@ -31,7 +31,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
     public void show() {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        skin = new Skin(Gdx.files.internal("skin/uiskin.json"),new TextureAtlas("skin/uiskin.atlas"));
+        skin = new Skin(Gdx.files.internal("skin/uiskin.json"), new TextureAtlas("skin/uiskin.atlas"));
 
         userService.getCharacters(this); // Fetch characters from server
     }
@@ -41,19 +41,23 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
         displayCharacters();
     }
 
+    private void refreshScreen() {
+        userService.getCharacters(this); // Fetch characters from server again
+    }
+
     private void displayCharacters() {
         stage.clear();
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        int y = 300;
         TextButton createButton = new TextButton("Create ", skin);
         createButton.setPosition(200, 100);
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 userService.createCharacter();
+                refreshScreen(); // Refresh the screen after creating a character
             }
         });
 
@@ -62,7 +66,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
         table.row();
 
         for (final CharacterRequest character : characters) {
-            Label characterNameLabel = new Label(character.getCharacterName(), skin);
+            Label characterNameLabel = new Label(character.getCharacterName() + " lvl " + character.getLvl(), skin);
             TextButton button = new TextButton("Choose " + character.getCharacterName() + " " + character.getId(), skin);
             button.addListener(new ClickListener() {
                 @Override
@@ -74,8 +78,9 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
 
             button.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(1f)));
 
-            table.add(characterNameLabel).left().padRight(10);
-            table.add(button).right().padBottom(10);
+            table.add(button).center().padBottom(10);
+            table.row();
+            table.add(characterNameLabel).center().padBottom(10);
             table.row();
         }
     }

@@ -29,8 +29,7 @@ public class CharacterRequest {
     private int gold;
     private int res;
 
-    private int xCoord;
-    private int yCoord;
+    private int lvl;
 
     private int unallocatedMainPoints;
     private int unallocatedStrPoints;
