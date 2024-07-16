@@ -12,6 +12,7 @@ import com.ta.data.CityRequest;
 import com.ta.data.JwtAuthenticationResponse;
 import com.ta.data.User;
 
+import com.ta.screens.BattleCityScreen;
 import com.ta.screens.ChooseCharacterScreen;
 import com.ta.screens.LoginScreen;
 import com.ta.screens.MainCityScreen;
@@ -260,7 +261,7 @@ public class UserService {
             public void handleHttpResponse(HttpResponse httpResponse) {
                 int statusCode = httpResponse.getStatus().getStatusCode();
                 String responseString = httpResponse.getResultAsString();
-                Gdx.app.log("UserService", "Response Status: " + statusCode);
+//                Gdx.app.log("UserService", "Response Status: " + statusCode);
 
                 if (statusCode == 200) {
                     try {
@@ -294,5 +295,53 @@ public class UserService {
         });
     }
 
+    public void moveBattleCity(){
+        String userJson = "1";
+        Gdx.app.log("moveBattleCity", "JSON Payload: " + userJson);
+
+        // Create the HTTP request
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
+        httpRequest.setUrl("http://localhost:8080/character/move");
+        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Authorization", "Bearer " + token);
+        httpRequest.setContent(userJson);
+
+        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(HttpResponse httpResponse) {
+                int statusCode = httpResponse.getStatus().getStatusCode();
+                String responseString = httpResponse.getResultAsString();
+                Gdx.app.log("moveBattleCity", "Response Status: " + statusCode);
+
+                if (statusCode == 200) {
+                    try {
+                        // Assuming the response is a JSON object with a "name" field
+//                        JSONObject responseBody = new JSONObject(responseString);
+//                        String characterName = responseBody.getString("name");
+                        Gdx.app.log("moveBattleCity", "Move successfully: ");
+
+                        Gdx.app.postRunnable(() -> {
+                            game.setScreen(new BattleCityScreen(game));
+                        });
+                    } catch (Exception e) {
+                        Gdx.app.log("moveBattleCity", "Failed to parse response JSON", e);
+                    }
+                } else {
+                    Gdx.app.log("moveBattleCity", "Failed to move: " + statusCode);
+                }
+
+            }
+
+            @Override
+            public void failed(Throwable t) {
+
+            }
+
+            @Override
+            public void cancelled() {
+
+            }
+        });
+    }
 
 }

@@ -11,15 +11,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
+import com.ta.auth.UserService;
 
 public class MoveScreen extends InputAdapter implements Screen {
     private Stage stage;
     private Skin skin;
-    private TextButton moveButton;
+    private TextButton moveMainCityButton;
+    private TextButton moveBattleCityButton;
     private ClientGDX game;
+    public UserService userService;
 
     public MoveScreen(ClientGDX game) {
         this.game = game;
+        userService = new UserService(game);
     }
 
     @Override
@@ -29,28 +33,38 @@ public class MoveScreen extends InputAdapter implements Screen {
 
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
-        moveButton = new TextButton("Move to Main City", skin);
-        // Enlarge buttons
-        moveButton.setSize(200, 80); // Width = 200, Height = 80
+        moveMainCityButton = new TextButton("Move to Main City", skin);
+        moveMainCityButton.setSize(200, 80);
+        moveMainCityButton.getLabel().setFontScale(1.5f);
 
-        // Optionally, scale the font
-        moveButton.getLabel().setFontScale(1.5f);
+        moveBattleCityButton = new TextButton("Move to Battle City", skin);
+        moveBattleCityButton.setSize(200, 80);
+        moveBattleCityButton.getLabel().setFontScale(1.5f);
 
         Table table = new Table();
         table.setFillParent(true);
         table.center(); // Center the table in the stage
 
         // Add buttons to the table with size parameters
-        table.add(moveButton).size(200, 80).padBottom(10).row();
+        table.add(moveMainCityButton).size(200, 80).padBottom(10).row();
+        table.add(moveBattleCityButton).size(200, 80).padBottom(10).row();
 
         // Add the table to the stage
         stage.addActor(table);
 
-        moveButton.addListener(new ClickListener() {
+        moveMainCityButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Move", "clicked");
+                Gdx.app.log("Move Main", "clicked");
                 game.setScreen(new MainCityScreen(game));
+            }
+        });
+        moveBattleCityButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("Move Battle", "clicked");
+                //game.setScreen(new BattleCityScreen(game));
+                userService.moveBattleCity();
             }
         });
     }
