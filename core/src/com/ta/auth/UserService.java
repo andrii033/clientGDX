@@ -296,7 +296,7 @@ public class UserService {
     }
 
     public void moveBattleCity(){
-        String userJson = "1";
+        String userJson = "2";
         Gdx.app.log("moveBattleCity", "JSON Payload: " + userJson);
 
         // Create the HTTP request
