@@ -7,10 +7,7 @@ import com.badlogic.gdx.Net.HttpResponse;
 import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.utils.*;
 import com.ta.ClientGDX;
-import com.ta.data.CharacterRequest;
-import com.ta.data.CityRequest;
-import com.ta.data.JwtAuthenticationResponse;
-import com.ta.data.User;
+import com.ta.data.*;
 
 import com.ta.screens.BattleCityScreen;
 import com.ta.screens.ChooseCharacterScreen;
@@ -295,9 +292,8 @@ public class UserService {
         });
     }
 
-    public void moveBattleCity(){
+    public void moveBattleCity() {
         String userJson = "2";
-        Gdx.app.log("moveBattleCity", "JSON Payload: " + userJson);
 
         // Create the HTTP request
         HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
@@ -311,17 +307,30 @@ public class UserService {
             public void handleHttpResponse(HttpResponse httpResponse) {
                 int statusCode = httpResponse.getStatus().getStatusCode();
                 String responseString = httpResponse.getResultAsString();
-                Gdx.app.log("moveBattleCity", "Response Status: " + statusCode);
+//                Gdx.app.log("moveBattleCity", "Response Status: " + statusCode);
+//                Gdx.app.log("moveBattleCity", "Response String: " + responseString);
 
                 if (statusCode == 200) {
                     try {
-                        // Assuming the response is a JSON object with a "name" field
-//                        JSONObject responseBody = new JSONObject(responseString);
-//                        String characterName = responseBody.getString("name");
-                        Gdx.app.log("moveBattleCity", "Move successfully: ");
+                        Json json = new Json();
+                        JsonReader jsonReader = new JsonReader();
+                        JsonValue jsonValue = jsonReader.parse(responseString);
+
+                        if (jsonValue == null) {
+                            Gdx.app.log("moveBattleCity", "Failed to parse JSON response.");
+                            return;
+                        }
+
+                        List<EnemyRequest> enemies = new ArrayList<>();
+                        for (JsonValue value : jsonValue) {
+                            EnemyRequest enemy = json.readValue(EnemyRequest.class, value);
+                            enemies.add(enemy);
+                        }
+
+                        Gdx.app.log("moveBattleCity enemies ", enemies.toString());
 
                         Gdx.app.postRunnable(() -> {
-                            game.setScreen(new BattleCityScreen(game));
+                            game.setScreen(new BattleCityScreen(game,enemies));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("moveBattleCity", "Failed to parse response JSON", e);
