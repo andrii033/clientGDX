@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
+import com.ta.data.CharacterRequest;
 
 public class MainCityScreen extends InputAdapter implements Screen {
 
@@ -18,9 +19,11 @@ public class MainCityScreen extends InputAdapter implements Screen {
     private Skin skin;
     private TextButton moveButton;
     private ClientGDX game;
+    CharacterRequest character;
 
-    public MainCityScreen(ClientGDX game) {
+    public MainCityScreen(ClientGDX game, CharacterRequest character) {
         this.game = game;
+        this.character = character;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class MainCityScreen extends InputAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Move", "clicked");
-                game.setScreen(new MoveScreen(game));
+                game.setScreen(new MoveScreen(game,character));
             }
         });
 

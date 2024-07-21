@@ -13,28 +13,31 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
+import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
 import com.badlogic.gdx.graphics.Texture;
 
 import java.util.List;
 
 public class BattleCityScreen extends InputAdapter implements Screen {
-    private Stage stage;
-    private Skin skin;
-    private ClientGDX game;
-    private Table rootTable;
-    private Table leftEnemyTable;
-    private Table rightEnemyTable;
-    private Table turnOrderTable;
+    private final Stage stage;
+    private final Skin skin;
+    private final ClientGDX game;
+    private final Table rootTable;
+    private final Table leftEnemyTable;
+    private final Table rightEnemyTable;
+    private final Table turnOrderTable;
+    private CharacterRequest character;
 
     private List<EnemyRequest> enemies;
 
     private static Image currentlyEnlargedIcon = null;
     private static boolean isIconEnlarged = false;
 
-    public BattleCityScreen(ClientGDX game, List<EnemyRequest> enemies) {
+    public BattleCityScreen(ClientGDX game, List<EnemyRequest> enemies, CharacterRequest character) {
         this.game = game;
         this.enemies = enemies;
+        this.character = character;
         this.stage = new Stage(new ScreenViewport());
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
@@ -62,24 +65,22 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        populateLeftEnemyTable(enemies);
+        populateLeftEnemyTable(character);
         populateRightEnemyTable(enemies);
         populateTurnOrderTable(enemies);
     }
 
-    private void populateLeftEnemyTable(List<EnemyRequest> enemies) {
-        for (EnemyRequest enemy : enemies) {
+    private void populateLeftEnemyTable(CharacterRequest character) {
             Table enemyRow = new Table();
             Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
-            Label nameLabel = new Label(enemy.getName() + " " + enemy.getId(), skin);
-            Label hpLabel = new Label("HP: " + enemy.getHp(), skin);
-            Label latestDamLabel = new Label("Latest Damage: " + enemy.getLatestDam(), skin);
+            Label nameLabel = new Label(character.getCharacterName() + " " + character.getId(), skin);
+            Label hpLabel = new Label("HP: " + character.getHp(), skin);
 
             // Add input listener to the icon
             icon.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Gdx.app.log("Icon Clicked", "Enemy: " + enemy.getName() + " ID: " + enemy.getId());
+                    Gdx.app.log("Icon Clicked", "Enemy: " + character.getCharacterName() + " ID: " + character.getId());
                     // Add your logic here for what happens when the icon is clicked
                 }
             });
@@ -87,10 +88,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             enemyRow.add(icon).size(70, 70).pad(5);
             enemyRow.add(nameLabel).pad(5);
             enemyRow.add(hpLabel).pad(5);
-            enemyRow.add(latestDamLabel).pad(5);
 
             leftEnemyTable.add(enemyRow).row();
-        }
     }
 
     private void populateRightEnemyTable(List<EnemyRequest> enemies) {

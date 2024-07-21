@@ -72,7 +72,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.log("ChooseCharacterScreen", "Character chosen: " + character.getCharacterName());
-                    userService.chooseCharacter(character.getId().toString());
+                    userService.chooseCharacter(character.getId().toString(),character);
                 }
             });
 

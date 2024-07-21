@@ -175,7 +175,7 @@ public class UserService {
     }
 
 
-    public void chooseCharacter(String id) {
+    public void chooseCharacter(String id, CharacterRequest character) {
         HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
         httpRequest.setUrl("http://localhost:8080/character/choose");
         httpRequest.setHeader("Content-Type", "application/json");
@@ -210,7 +210,7 @@ public class UserService {
                         cityRequests.add(cityRequest);
                     }
 
-                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game)));
+                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game,character)));
 
                 } catch (Exception e) {
                     Gdx.app.log("UserService", "Error parsing JSON response", e);
@@ -292,7 +292,7 @@ public class UserService {
         });
     }
 
-    public void moveBattleCity() {
+    public void moveBattleCity(CharacterRequest character) {
         String userJson = "2";
 
         // Create the HTTP request
@@ -330,7 +330,7 @@ public class UserService {
                         Gdx.app.log("moveBattleCity enemies ", enemies.toString());
 
                         Gdx.app.postRunnable(() -> {
-                            game.setScreen(new BattleCityScreen(game,enemies));
+                            game.setScreen(new BattleCityScreen(game,enemies,character));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("moveBattleCity", "Failed to parse response JSON", e);
