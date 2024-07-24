@@ -6,10 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
@@ -18,6 +15,8 @@ import com.ta.data.EnemyRequest;
 import com.badlogic.gdx.graphics.Texture;
 
 import java.util.List;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 
 public class BattleCityScreen extends InputAdapter implements Screen {
     private final Stage stage;
@@ -27,12 +26,16 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private final Table leftEnemyTable;
     private final Table rightEnemyTable;
     private final Table turnOrderTable;
-    private CharacterRequest character;
+    private TextButton attackButton;
+    private Label timeLeftLabel;
 
+    private CharacterRequest character;
     private List<EnemyRequest> enemies;
 
     private static Image currentlyEnlargedIcon = null;
     private static boolean isIconEnlarged = false;
+
+    private Timer timer;
 
     public BattleCityScreen(ClientGDX game, List<EnemyRequest> enemies, CharacterRequest character) {
         this.game = game;
@@ -48,6 +51,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         leftEnemyTable = new Table();
         rightEnemyTable = new Table();
         turnOrderTable = new Table();
+        timeLeftLabel = new Label("Time Left: ", skin);
 
         // Set table alignments
         leftEnemyTable.top().left();
@@ -59,37 +63,97 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         rootTable.add(rightEnemyTable).expand().top().right().pad(10).row();
         rootTable.add(turnOrderTable).expandX().bottom().center().pad(10).colspan(2);
 
+        // Add time left label
+        rootTable.row(); // Move to the next row
+        rootTable.add(timeLeftLabel).expand().center().colspan(2).pad(10);
+
+        // Add attack button to the root table
+        attackButton = new TextButton("Attack", skin);
+        attackButton.setSize(200, 100);
+        rootTable.row(); // Move to the next row
+        rootTable.add(attackButton).expand().center().colspan(2).pad(10);
+        attackButton.addListener(
+                new ClickListener() {
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        System.out.println("Clicked");
+                    }
+                }
+        );
+
         stage.addActor(rootTable);
+
+        // Schedule a task to update the UI periodically
+        timer = new Timer();
+        timer.scheduleTask(new Task() {
+            @Override
+            public void run() {
+                // Perform periodic updates here
+                updateTimeLeft();
+            }
+        }, 1, 1); // Schedule the task to run every second
+    }
+
+    private void updateTimeLeft() {
+        // Fetch the time left from the server (this could be done through WebSocket or HTTP request)
+        // For this example, let's just simulate it
+        long timeLeft = getTimeLeftFromServer(); // Replace with actual server call
+
+        Gdx.app.postRunnable(() -> {
+            timeLeftLabel.setText("Time Left: " + timeLeft + "ms");
+        });
+    }
+
+    private long getTimeLeftFromServer() {
+        // Simulate server call - replace this with actual logic to get time left from the server
+        return 10000 - (System.currentTimeMillis() % 10000);
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        populateLeftEnemyTable(character);
-        populateRightEnemyTable(enemies);
-        populateTurnOrderTable(enemies);
+        updateCharacter(character);
+        updateEnemies(enemies);
+    }
+
+    public void updateCharacter(CharacterRequest newCharacter) {
+        this.character = newCharacter;
+        leftEnemyTable.clear();  // Очистка текущих данных
+        populateLeftEnemyTable(newCharacter);  // Добавление новых данных
+    }
+
+    public void updateEnemies(List<EnemyRequest> newEnemies) {
+        this.enemies = newEnemies;
+        rightEnemyTable.clear();  // Очистка текущих данных
+        populateRightEnemyTable(newEnemies);  // Добавление новых данных
+        updateTurnOrder(newEnemies);  // Обновление порядка хода
+    }
+
+    private void updateTurnOrder(List<EnemyRequest> turnOrder) {
+        turnOrderTable.clear();  // Очистка текущих данных
+        populateTurnOrderTable(turnOrder);  // Добавление новых данных
     }
 
     private void populateLeftEnemyTable(CharacterRequest character) {
-            Table enemyRow = new Table();
-            Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
-            Label nameLabel = new Label(character.getCharacterName() + " " + character.getId(), skin);
-            Label hpLabel = new Label("HP: " + character.getHp(), skin);
+        Table enemyRow = new Table();
+        Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
+        Label nameLabel = new Label(character.getCharacterName() + " " + character.getId(), skin);
+        Label hpLabel = new Label("HP: " + character.getHp(), skin);
 
-            // Add input listener to the icon
-            icon.addListener(new ClickListener() {
-                @Override
-                public void clicked(InputEvent event, float x, float y) {
-                    Gdx.app.log("Icon Clicked", "Enemy: " + character.getCharacterName() + " ID: " + character.getId());
-                    // Add your logic here for what happens when the icon is clicked
-                }
-            });
+        // Add input listener to the icon
+        icon.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("Icon Clicked", "Enemy: " + character.getCharacterName() + " ID: " + character.getId());
+                // Add your logic here for what happens when the icon is clicked
+            }
+        });
 
-            enemyRow.add(icon).size(70, 70).pad(5);
-            enemyRow.add(nameLabel).pad(5);
-            enemyRow.add(hpLabel).pad(5);
+        enemyRow.add(icon).size(70, 70).pad(5);
+        enemyRow.add(nameLabel).pad(5);
+        enemyRow.add(hpLabel).pad(5);
 
-            leftEnemyTable.add(enemyRow).row();
+        leftEnemyTable.add(enemyRow).row();
     }
 
     private void populateRightEnemyTable(List<EnemyRequest> enemies) {
@@ -131,7 +195,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             rightEnemyTable.add(enemyRow).row();
         }
     }
-
 
     private void populateTurnOrderTable(List<EnemyRequest> turnOrder) {
         for (EnemyRequest entity : turnOrder) {
@@ -176,5 +239,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     public void dispose() {
         stage.dispose();
         skin.dispose();
+        if (timer != null) {
+            timer.clear();
+        }
     }
 }

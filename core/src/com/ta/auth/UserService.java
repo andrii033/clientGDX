@@ -353,4 +353,16 @@ public class UserService {
         });
     }
 
+//    public void chooseEnemy(String id){
+//        String userJson = id;
+//
+//        // Create the HTTP request
+//        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
+//        httpRequest.setUrl("http://localhost:8080/character/choose");
+//        httpRequest.setHeader("Content-Type", "application/json");
+//        httpRequest.setHeader("Authorization", "Bearer " + token);
+//        httpRequest.setContent(userJson);
+//    }
+
+
 }
