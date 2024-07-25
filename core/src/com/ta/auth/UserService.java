@@ -210,7 +210,7 @@ public class UserService {
                         cityRequests.add(cityRequest);
                     }
 
-                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game,character)));
+                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game, character)));
 
                 } catch (Exception e) {
                     Gdx.app.log("UserService", "Error parsing JSON response", e);
@@ -330,7 +330,7 @@ public class UserService {
                         Gdx.app.log("moveBattleCity enemies ", enemies.toString());
 
                         Gdx.app.postRunnable(() -> {
-                            game.setScreen(new BattleCityScreen(game,enemies,character));
+                            game.setScreen(new BattleCityScreen(game, enemies, character));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("moveBattleCity", "Failed to parse response JSON", e);
@@ -353,16 +353,47 @@ public class UserService {
         });
     }
 
-//    public void chooseEnemy(String id){
-//        String userJson = id;
-//
-//        // Create the HTTP request
-//        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
-//        httpRequest.setUrl("http://localhost:8080/character/choose");
-//        httpRequest.setHeader("Content-Type", "application/json");
-//        httpRequest.setHeader("Authorization", "Bearer " + token);
-//        httpRequest.setContent(userJson);
-//    }
+    public void fight(String id) {
+        String userJson = id;
+
+        // Create the HTTP request
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
+        httpRequest.setUrl("http://localhost:8080/character/fight");
+        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Authorization", "Bearer " + token);
+        httpRequest.setContent(userJson);
+
+        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(HttpResponse httpResponse) {
+                int statusCode = httpResponse.getStatus().getStatusCode();
+                String responseString = httpResponse.getResultAsString();
+
+                if (statusCode == 200) {
+                    try {
+                        Gdx.app.log("fight ", responseString);
+                        Gdx.app.postRunnable(() -> {
+                            //game.setScreen(new BattleCityScreen(game, enemies, character));
+                        });
+                    } catch (Exception e) {
+                        Gdx.app.log("fight", "Failed to parse response JSON", e);
+                    }
+                } else {
+                    Gdx.app.log("fight", "Failed: " + statusCode);
+                }
+            }
+
+            @Override
+            public void failed(Throwable t) {
+
+            }
+
+            @Override
+            public void cancelled() {
+
+            }
+        });
+    }
 
 
 }

@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
+import com.ta.auth.UserService;
 import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,6 +30,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private TextButton attackButton;
     private Label timeLeftLabel;
 
+    private UserService userService;
+
     private CharacterRequest character;
     private List<EnemyRequest> enemies;
 
@@ -43,6 +46,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         this.character = character;
         this.stage = new Stage(new ScreenViewport());
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        userService = new UserService(game);
 
         // Initialize tables
         rootTable = new Table();
@@ -76,7 +80,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                 new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        System.out.println("Clicked");
+                        userService.fight(String.valueOf(1));
                     }
                 }
         );
