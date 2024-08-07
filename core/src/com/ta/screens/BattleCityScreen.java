@@ -81,6 +81,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         userService.fight(String.valueOf(1));
+                        userService.party();            //временно добавлено потом изменить
                     }
                 }
         );

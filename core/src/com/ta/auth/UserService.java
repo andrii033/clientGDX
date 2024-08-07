@@ -395,5 +395,47 @@ public class UserService {
         });
     }
 
+    public void party(){
+        String userJson = "id"; //исправить потом
 
+        System.out.println("party");
+
+        // Create the HTTP request
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
+        httpRequest.setUrl("http://localhost:8080/party/create");
+        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Authorization", "Bearer " + token);
+        httpRequest.setContent(userJson);
+
+        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(HttpResponse httpResponse) {
+                int statusCode = httpResponse.getStatus().getStatusCode();
+                String responseString = httpResponse.getResultAsString();
+
+                if (statusCode == 200) {
+                    try {
+                        Gdx.app.log("party ", responseString);
+                        Gdx.app.postRunnable(() -> {
+                            //game.setScreen(new BattleCityScreen(game, enemies, character));
+                        });
+                    } catch (Exception e) {
+                        Gdx.app.log("party", "Failed to parse response JSON", e);
+                    }
+                } else {
+                    Gdx.app.log("party", "Failed: " + statusCode);
+                }
+            }
+
+            @Override
+            public void failed(Throwable t) {
+
+            }
+
+            @Override
+            public void cancelled() {
+
+            }
+        });
+    }
 }
