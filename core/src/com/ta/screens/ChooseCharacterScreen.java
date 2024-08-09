@@ -18,12 +18,10 @@ import com.ta.data.CharacterRequest;
 public class ChooseCharacterScreen extends InputAdapter implements Screen {
     private Stage stage;
     private Skin skin;
-    private UserService userService;
-    private ClientGDX game;
+    private final UserService userService;
     private Array<CharacterRequest> characters = new Array<>(); // Initialize the array
 
     public ChooseCharacterScreen(ClientGDX game) {
-        this.game = game;
         this.userService = new UserService(game);
     }
 
@@ -87,7 +85,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         stage.act(delta);

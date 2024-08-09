@@ -1,10 +1,12 @@
 package com.ta.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -33,7 +35,6 @@ public class LoginScreen extends InputAdapter implements Screen {
         Label usernameLabel = new Label("Username:", skin);
 
         TextField usernameField = new TextField("", skin);
-
 
         Label passwordLabel = new Label("Password:", skin);
 
@@ -74,14 +75,32 @@ public class LoginScreen extends InputAdapter implements Screen {
         loginButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                String username = usernameField.getText();
-                String password = passwordField.getText();
-                User user = new User();
-                user.setUsername(username);
-                user.setPassword(password);
-                userService.signIn(user);
+                handleLogin(usernameField.getText(), passwordField.getText());
             }
         });
+
+        // Input listener for Enter key press
+        InputListener enterListener = new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ENTER) {
+                    handleLogin(usernameField.getText(), passwordField.getText());
+                    return true;
+                }
+                return false;
+            }
+        };
+
+        // Attach the listener to both fields
+        usernameField.addListener(enterListener);
+        passwordField.addListener(enterListener);
+    }
+
+    private void handleLogin(String username, String password) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
+        userService.signIn(user);
     }
 
     @Override
