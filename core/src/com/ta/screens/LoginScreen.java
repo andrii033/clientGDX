@@ -18,11 +18,9 @@ import com.ta.data.User;
 public class LoginScreen extends InputAdapter implements Screen {
     private Stage stage;
     private Skin skin;
-    private UserService userService;
-    private ClientGDX game;
+    private final UserService userService;
 
     public LoginScreen(ClientGDX game) {
-        this.game = game;
         userService = new UserService(game);
     }
 
@@ -34,29 +32,23 @@ public class LoginScreen extends InputAdapter implements Screen {
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         Label usernameLabel = new Label("Username:", skin);
-        usernameLabel.setPosition(100, 250);
         stage.addActor(usernameLabel);
 
         TextField usernameField = new TextField("", skin);
-        usernameField.setPosition(200, 250);
         stage.addActor(usernameField);
 
         Label passwordLabel = new Label("Password:", skin);
-        passwordLabel.setPosition(100, 200);
         stage.addActor(passwordLabel);
 
         TextField passwordField = new TextField("", skin);
-        passwordField.setPosition(200, 200);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
         stage.addActor(passwordField);
 
         TextButton loginButton = new TextButton("Login", skin);
-        loginButton.setPosition(200, 150);
         stage.addActor(loginButton);
 
         Label messageLabel = new Label("", skin);
-        messageLabel.setPosition(100, 100);
         stage.addActor(messageLabel);
 
         loginButton.addListener(new ClickListener() {
@@ -74,7 +66,7 @@ public class LoginScreen extends InputAdapter implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 1, 0, 1);
+        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         stage.act(delta);
