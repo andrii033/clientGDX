@@ -10,22 +10,19 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
 import com.ta.data.User;
 
 public class RegistrarionScreen extends InputAdapter implements Screen {
     private Stage stage;
-    private Skin skin;
     private TextField usernameField;
     private TextField passwordField;
     private TextField rePasswordField;
     private TextField emailField;
-    private TextButton registerButton;
     private Label messageLabel;
-    private UserService userService;
-    private ClientGDX game;
+    private final UserService userService;
+    private final ClientGDX game;
 
     public RegistrarionScreen(ClientGDX game) {
         this.game = game;
@@ -37,42 +34,34 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
         stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
-        skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        Skin skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         Label usernameLabel = new Label("Username:", skin);
-        usernameLabel.setPosition(100, 300);
 
         usernameField = new TextField("", skin);
-        usernameField.setPosition(200, 300);
         usernameField.setSize(150, 30);
 
         Label passwordLabel = new Label("Password:", skin);
-        passwordLabel.setPosition(100, 250);
 
         passwordField = new TextField("", skin);
-        passwordField.setPosition(200, 250);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
 
         Label rePasswordLabel = new Label("Re-enter Password:", skin);
-        rePasswordLabel.setPosition(100, 200);
 
         rePasswordField = new TextField("", skin);
-        rePasswordField.setPosition(200, 200);
         rePasswordField.setPasswordMode(true);
         rePasswordField.setPasswordCharacter('*');
 
         Label emailLabel = new Label("Email:", skin);
-        emailLabel.setPosition(100, 150);
 
         emailField = new TextField("", skin);
-        emailField.setPosition(200, 150);
 
-        registerButton = new TextButton("Register", skin);
-        registerButton.setPosition(200, 100);
+        TextButton registerButton = new TextButton("Register", skin);
 
         messageLabel = new Label("", skin);
-        messageLabel.setPosition(100, 50);
+
+        TextButton backButton = new TextButton("Back", skin);
 
         Table table = new Table();
         table.setFillParent(true);
@@ -90,6 +79,9 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
 
         stage.addActor(table);
 
+        backButton.setPosition(10, 10);  // Bottom-left corner
+        stage.addActor(backButton);
+
         stage.setKeyboardFocus(usernameField);
 
         // Register button click listener
@@ -97,6 +89,12 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 handleRegister();
+            }
+        });
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new LoginSignupScreen(game));
             }
         });
 
@@ -140,7 +138,7 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         stage.act(delta);

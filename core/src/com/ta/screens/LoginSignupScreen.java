@@ -15,9 +15,7 @@ import com.ta.ClientGDX;
 public class LoginSignupScreen extends InputAdapter implements Screen {
     private Stage stage;
     private Skin skin;
-    private TextButton loginButton;
-    private TextButton registerButton;
-    private ClientGDX game;
+    private final ClientGDX game;
 
     public LoginSignupScreen(ClientGDX game) {
         this.game = game;
@@ -31,8 +29,8 @@ public class LoginSignupScreen extends InputAdapter implements Screen {
 
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
-        loginButton = new TextButton("Login", skin);
-        registerButton = new TextButton("Register", skin);
+        TextButton loginButton = new TextButton("Login", skin);
+        TextButton registerButton = new TextButton("Register", skin);
         // Enlarge buttons
         loginButton.setSize(200, 80); // Width = 200, Height = 80
         registerButton.setSize(200, 80); // Width = 200, Height = 80
@@ -72,7 +70,7 @@ public class LoginSignupScreen extends InputAdapter implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
         stage.act(delta);
