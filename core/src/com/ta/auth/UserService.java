@@ -8,7 +8,6 @@ import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.utils.*;
 import com.ta.ClientGDX;
 import com.ta.data.*;
-
 import com.ta.screens.BattleCityScreen;
 import com.ta.screens.ChooseCharacterScreen;
 import com.ta.screens.LoginScreen;
@@ -157,22 +156,38 @@ public class UserService {
             @Override
             public void handleHttpResponse(HttpResponse httpResponse) {
                 String responseString = httpResponse.getResultAsString();
-                Json json = new Json();
-                Array<CharacterRequest> characters = json.fromJson(Array.class, CharacterRequest.class, responseString);
-                screen.setCharacters(characters);
+                Gdx.app.log("UserService", "Response: " + responseString);
+
+                try {
+                    // Check if the response string is a valid JSON array
+                    if (responseString != null && !responseString.trim().isEmpty()) {
+                        Json json = new Json();
+                        Array<CharacterRequest> characters = json.fromJson(Array.class, CharacterRequest.class, responseString);
+                        screen.setCharacters(characters);
+                    } else {
+                        Gdx.app.log("UserService", "Empty or invalid response received");
+                        screen.setCharacters(new Array<>()); // Handle empty response
+                    }
+                } catch (Exception e) {
+                    Gdx.app.log("UserService", "Failed to parse response JSON: " + e.getMessage(), e);
+                    screen.setCharacters(new Array<>()); // Fallback to an empty list on parsing failure
+                }
             }
 
             @Override
             public void failed(Throwable t) {
                 Gdx.app.log("UserService", "Failed to get characters", t);
+                screen.setCharacters(new Array<>()); // Handle failure by setting an empty array
             }
 
             @Override
             public void cancelled() {
-                Gdx.app.log("UserService", "Cancelled get characters");
+                Gdx.app.log("UserService", "Request cancelled");
+                screen.setCharacters(new Array<>()); // Handle cancellation by setting an empty array
             }
         });
     }
+
 
 
     public void chooseCharacter(String id, CharacterRequest character) {
@@ -395,7 +410,7 @@ public class UserService {
         });
     }
 
-    public void party(){
+    public void party() {
         String userJson = "id"; //исправить потом
 
         System.out.println("party");

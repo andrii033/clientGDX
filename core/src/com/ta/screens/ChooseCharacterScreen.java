@@ -35,7 +35,13 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
     }
 
     public void setCharacters(Array<CharacterRequest> characters) {
-        this.characters = characters;
+        if (characters == null) {
+            Gdx.app.log("ChooseCharacterScreen", "Received null characters array.");
+            this.characters = new Array<>(); // Prevent null issues
+        } else {
+            Gdx.app.log("ChooseCharacterScreen", "Received characters: " + characters.size);
+            this.characters = characters;
+        }
         displayCharacters();
     }
 
