@@ -6,10 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
@@ -19,9 +16,11 @@ public class LoginScreen extends InputAdapter implements Screen {
     private Stage stage;
     private Skin skin;
     private final UserService userService;
+    private final ClientGDX game;
 
     public LoginScreen(ClientGDX game) {
         userService = new UserService(game);
+        this.game = game;
     }
 
     @Override
@@ -32,24 +31,45 @@ public class LoginScreen extends InputAdapter implements Screen {
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         Label usernameLabel = new Label("Username:", skin);
-        stage.addActor(usernameLabel);
 
         TextField usernameField = new TextField("", skin);
-        stage.addActor(usernameField);
+
 
         Label passwordLabel = new Label("Password:", skin);
-        stage.addActor(passwordLabel);
 
         TextField passwordField = new TextField("", skin);
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
-        stage.addActor(passwordField);
 
         TextButton loginButton = new TextButton("Login", skin);
-        stage.addActor(loginButton);
 
         Label messageLabel = new Label("", skin);
-        stage.addActor(messageLabel);
+
+        Table table = new Table();
+        table.setFillParent(true);
+        table.center();
+        table.add(usernameLabel).pad(10);
+        table.add(usernameField).pad(10);
+        table.row();
+        table.add(passwordLabel).pad(10);
+        table.add(passwordField).pad(10);
+        table.row();
+        table.add(loginButton).pad(10);
+        table.row();
+        table.add(messageLabel).pad(10);
+
+        stage.addActor(table);
+
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.setPosition(10, 10);  // Bottom-left corner
+        stage.addActor(backButton);
+
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new LoginSignupScreen(game));
+            }
+        });
 
         loginButton.addListener(new ClickListener() {
             @Override
