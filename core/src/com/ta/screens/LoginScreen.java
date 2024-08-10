@@ -61,6 +61,8 @@ public class LoginScreen extends InputAdapter implements Screen {
 
         stage.addActor(table);
 
+        stage.setKeyboardFocus(usernameField);
+
         TextButton backButton = new TextButton("Back", skin);
         backButton.setPosition(10, 10);  // Bottom-left corner
         stage.addActor(backButton);
