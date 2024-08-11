@@ -19,10 +19,18 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
     private Skin skin;
     private final ClientGDX game;
     private final UserService userService;
+    private Integer points;
+    private Integer str;
+    private Integer agi;
+    private Integer inte;
 
     public CreateCharacteScreen(ClientGDX game) {
         this.game = game;
         userService = new UserService(game);
+        points = 3;
+        str=0;
+        agi=0;
+        inte=0;
     }
 
     @Override
@@ -41,10 +49,64 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         TextField nameTextField = new TextField("", skin);
         table.add(nameTextField).pad(10);
         table.row();
+        Label pointsLabel = new Label("Points ", skin);
+        table.add(pointsLabel).pad(10);
+        Label pointsCountLabel = new Label(points.toString(), skin);
+        table.add(pointsCountLabel).pad(10);
+        table.row();
+        Label strengthLabel = new Label("Strength ", skin);
+        table.add(strengthLabel).pad(10);
+        TextButton strengthButton = new TextButton("+", skin);
+        table.add(strengthButton).pad(10);
+        table.row();
+        Label agiLabel = new Label("Agility ", skin);
+        table.add(agiLabel).pad(10);
+        TextButton agiButton = new TextButton("+", skin);
+        table.add(agiButton).pad(10);
+        table.row();
+        Label inteLabel = new Label("Intelligence ", skin);
+        table.add(inteLabel).pad(10);
+        TextButton inteButton = new TextButton("+", skin);
+        table.add(inteButton).pad(10);
+
         TextButton createButton = new TextButton("Create", skin);
         table.add(createButton).pad(10);
 
         stage.addActor(table);
+
+        strengthButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(points>0) {
+                    str++;
+                    points--;
+                    pointsCountLabel.setText(points.toString());
+                    strengthLabel.setText(str);
+                }
+            }
+        });
+        agiButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(points>0) {
+                    agi++;
+                    points--;
+                    pointsCountLabel.setText(points.toString());
+                    agiLabel.setText(agi);
+                }
+            }
+        });
+        inteButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(points>0) {
+                    inte++;
+                    points--;
+                    pointsCountLabel.setText(points.toString());
+                    inteLabel.setText(inte);
+                }
+            }
+        });
 
         stage.setKeyboardFocus(nameTextField);
 
@@ -62,7 +124,7 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                createCharacter(nameTextField.getText());
+                createCharacter(nameTextField.getText(),str,agi,inte);
             }
         });
 
@@ -71,7 +133,7 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
             @Override
             public boolean keyDown(InputEvent event, int keycode) {
                 if (keycode == Input.Keys.ENTER) {
-                    createCharacter(nameTextField.getText());
+                    createCharacter(nameTextField.getText(),str,agi,inte);
                     return true;
                 }
                 return false;
@@ -81,12 +143,12 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         nameTextField.addListener(enterListener);
     }
 
-    private void createCharacter(String name){
+    private void createCharacter(String name, Integer str, Integer agi, Integer inte){
         CreateCharacterRequest characterRequest = new CreateCharacterRequest();
         characterRequest.setName(name);
-        characterRequest.setStr(1);
-        characterRequest.setAgi(1);
-        characterRequest.setInte(1);
+        characterRequest.setStr(str);
+        characterRequest.setAgi(agi);
+        characterRequest.setInte(inte);
         userService.createCharacter(characterRequest);
         game.setScreen(new ChooseCharacterScreen(game));
     }
