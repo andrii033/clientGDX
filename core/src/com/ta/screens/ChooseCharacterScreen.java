@@ -20,9 +20,11 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
     private Skin skin;
     private final UserService userService;
     private Array<CharacterRequest> characters = new Array<>(); // Initialize the array
+    private final ClientGDX game;
 
     public ChooseCharacterScreen(ClientGDX game) {
         this.userService = new UserService(game);
+        this.game = game;
     }
 
     @Override
@@ -32,6 +34,17 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"), new TextureAtlas("skin/uiskin.atlas"));
 
         userService.getCharacters(this); // Fetch characters from server
+
+//        TextButton backButton = new TextButton("Back", skin);
+//        backButton.setPosition(10, 10);  // Bottom-left corner
+//        stage.addActor(backButton);
+//
+//        backButton.addListener(new ClickListener() {
+//            @Override
+//            public void clicked(InputEvent event, float x, float y) {
+//                game.setScreen(new ChooseCharacterScreen(game));
+//            }
+//        });
     }
 
     public void setCharacters(Array<CharacterRequest> characters) {
@@ -60,8 +73,9 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                userService.createCharacter();
-                refreshScreen(); // Refresh the screen after creating a character
+                //userService.createCharacter();
+                //refreshScreen(); // Refresh the screen after creating a character
+                game.setScreen(new CreateCharacteScreen(game));
             }
         });
 
@@ -87,6 +101,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
             table.add(characterNameLabel).center().padBottom(10);
             table.row();
         }
+
     }
 
     @Override

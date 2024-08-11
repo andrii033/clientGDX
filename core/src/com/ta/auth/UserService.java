@@ -164,6 +164,7 @@ public class UserService {
                         Json json = new Json();
                         Array<CharacterRequest> characters = json.fromJson(Array.class, CharacterRequest.class, responseString);
                         screen.setCharacters(characters);
+                        //Gdx.app.postRunnable(() -> game.setScreen(new ChooseCharacterScreen(game)));
                     } else {
                         Gdx.app.log("UserService", "Empty or invalid response received");
                         screen.setCharacters(new Array<>()); // Handle empty response
@@ -245,13 +246,16 @@ public class UserService {
     }
 
 
-    public void createCharacter() {
+    public void createCharacter(CreateCharacterRequest request) {
         Gdx.app.log("UserService", "Creating character");
 
         // Create the JSON payload
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("characterName", "New Character");
+            requestBody.put("name", request.getName());
+            requestBody.put("str", request.getStr());
+            requestBody.put("agi", request.getAgi());
+            requestBody.put("inte",request.getInte());
         } catch (Exception e) {
             Gdx.app.log("UserService", "Failed to create JSON payload", e);
             return;
