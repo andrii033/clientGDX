@@ -35,16 +35,6 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
 
         userService.getCharacters(this); // Fetch characters from server
 
-//        TextButton backButton = new TextButton("Back", skin);
-//        backButton.setPosition(10, 10);  // Bottom-left corner
-//        stage.addActor(backButton);
-//
-//        backButton.addListener(new ClickListener() {
-//            @Override
-//            public void clicked(InputEvent event, float x, float y) {
-//                game.setScreen(new ChooseCharacterScreen(game));
-//            }
-//        });
     }
 
     public void setCharacters(Array<CharacterRequest> characters) {
@@ -58,23 +48,17 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
         displayCharacters();
     }
 
-    private void refreshScreen() {
-        userService.getCharacters(this); // Fetch characters from server again
-    }
-
     private void displayCharacters() {
         stage.clear();
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
 
-        TextButton createButton = new TextButton("Create ", skin);
+        TextButton createButton = new TextButton("Create", skin);
         createButton.setPosition(200, 100);
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //userService.createCharacter();
-                //refreshScreen(); // Refresh the screen after creating a character
                 game.setScreen(new CreateCharacteScreen(game));
             }
         });
@@ -90,7 +74,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.log("ChooseCharacterScreen", "Character chosen: " + character.getCharacterName());
-                    userService.chooseCharacter(character.getId().toString(),character);
+                    userService.chooseCharacter(character.getId().toString(), character);
                 }
             });
 
@@ -102,7 +86,19 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
             table.row();
         }
 
+        // Adding the "Back" button to the bottom-left corner of the screen
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.setPosition(10, 10); // Bottom-left corner
+        stage.addActor(backButton);
+
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new LoginSignupScreen(game));
+            }
+        });
     }
+
 
     @Override
     public void render(float delta) {

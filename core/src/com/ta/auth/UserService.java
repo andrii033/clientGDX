@@ -164,7 +164,6 @@ public class UserService {
                         Json json = new Json();
                         Array<CharacterRequest> characters = json.fromJson(Array.class, CharacterRequest.class, responseString);
                         screen.setCharacters(characters);
-                        //Gdx.app.postRunnable(() -> game.setScreen(new ChooseCharacterScreen(game)));
                     } else {
                         Gdx.app.log("UserService", "Empty or invalid response received");
                         screen.setCharacters(new Array<>()); // Handle empty response

@@ -1,10 +1,12 @@
 package com.ta.screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -60,17 +62,33 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         createButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                CreateCharacterRequest characterRequest = new CreateCharacterRequest();
-                characterRequest.setName(nameTextField.getText());
-                characterRequest.setStr(1);
-                characterRequest.setAgi(1);
-                characterRequest.setInte(1);
-                userService.createCharacter(characterRequest);
-                game.setScreen(new ChooseCharacterScreen(game));
+                createCharacter(nameTextField.getText());
             }
         });
 
+        // Input listener for Enter key press
+        InputListener enterListener = new InputListener() {
+            @Override
+            public boolean keyDown(InputEvent event, int keycode) {
+                if (keycode == Input.Keys.ENTER) {
+                    createCharacter(nameTextField.getText());
+                    return true;
+                }
+                return false;
+            }
+        };
 
+        nameTextField.addListener(enterListener);
+    }
+
+    private void createCharacter(String name){
+        CreateCharacterRequest characterRequest = new CreateCharacterRequest();
+        characterRequest.setName(name);
+        characterRequest.setStr(1);
+        characterRequest.setAgi(1);
+        characterRequest.setInte(1);
+        userService.createCharacter(characterRequest);
+        game.setScreen(new ChooseCharacterScreen(game));
     }
 
     @Override
