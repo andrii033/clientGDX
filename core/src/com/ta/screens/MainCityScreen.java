@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
 import com.ta.data.CharacterRequest;
+import com.ta.data.CreateCharacterRequest;
 
 public class MainCityScreen extends InputAdapter implements Screen {
 
@@ -19,9 +20,9 @@ public class MainCityScreen extends InputAdapter implements Screen {
     private Skin skin;
     private TextButton moveButton;
     private ClientGDX game;
-    CharacterRequest character;
+    CreateCharacterRequest character;
 
-    public MainCityScreen(ClientGDX game, CharacterRequest character) {
+    public MainCityScreen(ClientGDX game, CreateCharacterRequest character) {
         this.game = game;
         this.character = character;
     }

@@ -14,17 +14,24 @@ import com.badlogic.gdx.utils.Array;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
 import com.ta.data.CharacterRequest;
+import com.ta.data.CreateCharacterRequest;
 
 public class ChooseCharacterScreen extends InputAdapter implements Screen {
     private Stage stage;
     private Skin skin;
     private final UserService userService;
-    private Array<CharacterRequest> characters = new Array<>(); // Initialize the array
+    private Array<CreateCharacterRequest> characters = new Array<>(); // Initialize the array
     private final ClientGDX game;
 
     public ChooseCharacterScreen(ClientGDX game) {
         this.userService = new UserService(game);
         this.game = game;
+    }
+
+    public ChooseCharacterScreen(ClientGDX game, Array<CreateCharacterRequest> characters) {
+        this.userService = new UserService(game);
+        this.game = game;
+        this.characters = characters;
     }
 
     @Override
@@ -33,23 +40,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage);
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"), new TextureAtlas("skin/uiskin.atlas"));
 
-        userService.getCharacters(this); // Fetch characters from server
-
-    }
-
-    public void setCharacters(Array<CharacterRequest> characters) {
-        if (characters == null) {
-            Gdx.app.log("ChooseCharacterScreen", "Received null characters array.");
-            this.characters = new Array<>(); // Prevent null issues
-        } else {
-            Gdx.app.log("ChooseCharacterScreen", "Received characters: " + characters.size);
-            this.characters = characters;
-        }
-        displayCharacters();
-    }
-
-    private void displayCharacters() {
-        stage.clear();
+        //userService.getCharacters(this); // Fetch characters from server
         Table table = new Table();
         table.setFillParent(true);
         stage.addActor(table);
@@ -67,14 +58,14 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
         table.add(createButton).center().padBottom(10);
         table.row();
 
-        for (final CharacterRequest character : characters) {
-            Label characterNameLabel = new Label(character.getCharacterName() + " lvl " + character.getLvl(), skin);
-            TextButton button = new TextButton("Choose " + character.getCharacterName() + " " + character.getId(), skin);
+        for (final CreateCharacterRequest character : characters) {
+            Label characterNameLabel = new Label(character.getName(), skin);
+            TextButton button = new TextButton("Choose " + character.getName() + " " + character.getId(), skin);
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    Gdx.app.log("ChooseCharacterScreen", "Character chosen: " + character.getCharacterName());
-                    userService.chooseCharacter(character.getId().toString(), character);
+                    Gdx.app.log("ChooseCharacterScreen", "Character chosen: " + character.getName());
+                    userService.chooseCharacter(String.valueOf(character.getId()), character);
                 }
             });
 
@@ -97,6 +88,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
                 game.setScreen(new LoginSignupScreen(game));
             }
         });
+
     }
 
 

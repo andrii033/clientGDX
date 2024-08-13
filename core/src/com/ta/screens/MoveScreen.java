@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
 import com.ta.data.CharacterRequest;
+import com.ta.data.CreateCharacterRequest;
 
 public class MoveScreen extends InputAdapter implements Screen {
     private Stage stage;
@@ -21,9 +22,9 @@ public class MoveScreen extends InputAdapter implements Screen {
     private TextButton moveBattleCityButton;
     private ClientGDX game;
     public UserService userService;
-    CharacterRequest character;
+    CreateCharacterRequest character;
 
-    public MoveScreen(ClientGDX game, CharacterRequest character) {
+    public MoveScreen(ClientGDX game, CreateCharacterRequest character) {
         this.game = game;
         userService = new UserService(game);
         this.character = character;
