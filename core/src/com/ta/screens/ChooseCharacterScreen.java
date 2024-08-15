@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -22,6 +23,8 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
     private final UserService userService;
     private Array<CreateCharacterRequest> characters = new Array<>(); // Initialize the array
     private final ClientGDX game;
+    Texture iconTexture;
+    Image iconCharacter;
 
     public ChooseCharacterScreen(ClientGDX game) {
         this.userService = new UserService(game);
@@ -37,13 +40,15 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
     @Override
     public void show() {
         stage = new Stage();
+        iconTexture = new Texture(Gdx.files.internal("assets/badlogic.jpg"));
+        iconCharacter = new Image(iconTexture);
         Gdx.input.setInputProcessor(stage);
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"), new TextureAtlas("skin/uiskin.atlas"));
 
         //userService.getCharacters(this); // Fetch characters from server
         Table table = new Table();
         table.setFillParent(true);
-        stage.addActor(table);
+
 
         TextButton createButton = new TextButton("Create", skin);
         createButton.setPosition(200, 100);
@@ -54,13 +59,8 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
             }
         });
 
-        createButton.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(1f)));
-        table.add(createButton).center().padBottom(10);
-        table.row();
-
         for (final CreateCharacterRequest character : characters) {
-            Label characterNameLabel = new Label(character.getName(), skin);
-            TextButton button = new TextButton("Choose " + character.getName() + " " + character.getId(), skin);
+            TextButton button = new TextButton(character.getName()+" lvl "+character.getLvl(), skin);
             button.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -71,11 +71,18 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
 
             button.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(1f)));
 
+
+            table.add(iconCharacter).size(64, 64);
             table.add(button).center().padBottom(10);
             table.row();
-            table.add(characterNameLabel).center().padBottom(10);
-            table.row();
         }
+
+        createButton.addAction(Actions.sequence(Actions.alpha(0), Actions.fadeIn(1f)));
+        table.row().height(20);
+        table.row().height(20);
+        table.add(createButton).center().pad(10);
+        table.row();
+        stage.addActor(table);
 
         // Adding the "Back" button to the bottom-left corner of the screen
         TextButton backButton = new TextButton("Back", skin);

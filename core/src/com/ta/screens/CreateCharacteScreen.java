@@ -58,16 +58,23 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         table.add(strengthLabel).pad(10);
         TextButton strengthButton = new TextButton("+", skin);
         table.add(strengthButton).pad(10);
+        TextButton minusStrengthButton = new TextButton("-", skin);
+        table.add(minusStrengthButton).pad(10);
         table.row();
         Label agiLabel = new Label("Agility ", skin);
         table.add(agiLabel).pad(10);
         TextButton agiButton = new TextButton("+", skin);
         table.add(agiButton).pad(10);
+        TextButton minusAgiButton = new TextButton("-", skin);
+        table.add(minusAgiButton).pad(10);
         table.row();
         Label inteLabel = new Label("Intelligence ", skin);
         table.add(inteLabel).pad(10);
         TextButton inteButton = new TextButton("+", skin);
         table.add(inteButton).pad(10);
+        TextButton minusInteButton = new TextButton("-", skin);
+        table.add(minusInteButton).pad(10);
+        table.row();
 
         TextButton createButton = new TextButton("Create", skin);
         table.add(createButton).pad(10);
@@ -85,6 +92,17 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
                 }
             }
         });
+        minusStrengthButton.addListener((ClickListener) new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(str>0) {
+                    str--;
+                    points++;
+                    pointsCountLabel.setText(points.toString());
+                    strengthLabel.setText(str.toString());
+                }
+            }
+        });
         agiButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -96,12 +114,38 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
                 }
             }
         });
+
+
+        minusAgiButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(agi>0) {
+                    agi--;
+                    points++;
+                    pointsCountLabel.setText(points.toString());
+                    agiLabel.setText(agi);
+                }
+            }
+        });
+
         inteButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if(points>0) {
                     inte++;
                     points--;
+                    pointsCountLabel.setText(points.toString());
+                    inteLabel.setText(inte);
+                }
+            }
+        });
+
+        minusInteButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if(inte>0) {
+                    inte--;
+                    points++;
                     pointsCountLabel.setText(points.toString());
                     inteLabel.setText(inte);
                 }
@@ -155,7 +199,6 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
 
     @Override
     public void render(float delta) {
-
         Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 

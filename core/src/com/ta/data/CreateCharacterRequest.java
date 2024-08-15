@@ -11,4 +11,5 @@ public class CreateCharacterRequest {
     int str;
     int agi;
     int inte;
+    int lvl;
 }
