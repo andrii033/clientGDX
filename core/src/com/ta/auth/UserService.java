@@ -247,11 +247,7 @@ public class UserService {
     }
 
 
-
-
-
-
-    public void chooseCharacter(String id, CreateCharacterRequest character) {
+    public void chooseCharacter(String id) {
         HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
         httpRequest.setUrl("http://localhost:8080/character/choose");
         httpRequest.setHeader("Content-Type", "application/json");
@@ -261,9 +257,8 @@ public class UserService {
         Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
             @Override
             public void handleHttpResponse(HttpResponse httpResponse) {
-
                 String responseString = httpResponse.getResultAsString();
-                Gdx.app.log("UserService", "Character chosen successfully " + responseString);
+                Gdx.app.log("chooseCharacter", "Character chosen successfully " + responseString);
 
                 if (responseString == null || responseString.isEmpty()) {
                     Gdx.app.log("UserService", "Empty or null response received.");
@@ -272,38 +267,34 @@ public class UserService {
 
                 try {
                     Json json = new Json();
-                    JsonReader jsonReader = new JsonReader();
-                    JsonValue jsonValue = jsonReader.parse(responseString);
+                    CharacterResponse characterResponse = json.fromJson(CharacterResponse.class, responseString);
 
-                    if (jsonValue == null) {
-                        Gdx.app.log("UserService", "Failed to parse JSON response.");
+                    if (characterResponse == null) {
+                        Gdx.app.log("chooseCharacter", "Failed to parse JSON response.");
                         return;
                     }
 
-                    List<CityRequest> cityRequests = new ArrayList<>();
-                    for (JsonValue value : jsonValue) {
-                        CityRequest cityRequest = json.readValue(CityRequest.class, value);
-                        cityRequests.add(cityRequest);
-                    }
+                    Gdx.app.log("chooseCharacter", "Character: " + characterResponse.getCharacterName());
 
-                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game, character)));
+                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game)));
 
                 } catch (Exception e) {
-                    Gdx.app.log("UserService", "Error parsing JSON response", e);
+                    Gdx.app.log("chooseCharacter", "Error parsing JSON response", e);
                 }
             }
 
             @Override
             public void failed(Throwable t) {
-                Gdx.app.log("UserService", "Failed to choose character", t);
+                Gdx.app.log("chooseCharacter", "Failed to choose character", t);
             }
 
             @Override
             public void cancelled() {
-                Gdx.app.log("UserService", "Cancelled choose character");
+                Gdx.app.log("chooseCharacter", "Cancelled choose character");
             }
         });
     }
+
 
 
 

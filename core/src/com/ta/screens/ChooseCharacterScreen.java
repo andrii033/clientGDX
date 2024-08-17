@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
-import com.ta.data.CharacterRequest;
 import com.ta.data.CreateCharacterRequest;
 
 public class ChooseCharacterScreen extends InputAdapter implements Screen {
@@ -65,7 +64,7 @@ public class ChooseCharacterScreen extends InputAdapter implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.log("ChooseCharacterScreen", "Character chosen: " + character.getName());
-                    userService.chooseCharacter(String.valueOf(character.getId()), character);
+                    userService.chooseCharacter(String.valueOf(character.getId()));
                 }
             });
 

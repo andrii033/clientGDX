@@ -6,12 +6,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
-import com.ta.data.CharacterRequest;
 import com.ta.data.CreateCharacterRequest;
 
 public class MainCityScreen extends InputAdapter implements Screen {
@@ -22,9 +22,8 @@ public class MainCityScreen extends InputAdapter implements Screen {
     private ClientGDX game;
     CreateCharacterRequest character;
 
-    public MainCityScreen(ClientGDX game, CreateCharacterRequest character) {
+    public MainCityScreen(ClientGDX game) {
         this.game = game;
-        this.character = character;
     }
 
     @Override
@@ -35,18 +34,25 @@ public class MainCityScreen extends InputAdapter implements Screen {
         skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
 
         moveButton = new TextButton("Move to moveScreen", skin);
-        // Enlarge buttons
-        moveButton.setSize(200, 80); // Width = 200, Height = 80
-
-        // Optionally, scale the font
         moveButton.getLabel().setFontScale(1.5f);
 
         Table table = new Table();
         table.setFillParent(true);
-        table.center(); // Center the table in the stage
+        table.center();
 
-        // Add buttons to the table with size parameters
-        table.add(moveButton).size(200, 80).padBottom(10).row();
+        // Character button in the top-left corner
+        TextButton characterButton = new TextButton("Character", skin);
+        characterButton.getLabel().setFontScale(1.5f);
+        table.top().left();
+        table.add(characterButton).size(200, 80).expand().fill().padBottom(10);
+
+        // City label next to the character button
+        Label cityLabel = new Label("MainCity", skin);
+        table.add(cityLabel).size(200, 80).expand().fill().padBottom(10);
+
+        // Move button on a new row
+        table.row();
+        table.add(moveButton).size(200, 80).expand().fill().padBottom(10).colspan(2); // colspan=2 to make it span across both columns
 
         // Add the table to the stage
         stage.addActor(table);
@@ -55,11 +61,11 @@ public class MainCityScreen extends InputAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Move", "clicked");
-                game.setScreen(new MoveScreen(game,character));
+                game.setScreen(new MoveScreen(game, character));
             }
         });
-
     }
+
 
     @Override
     public void render(float delta) {

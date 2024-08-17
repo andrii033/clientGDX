@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
-import com.ta.data.CharacterRequest;
 import com.ta.data.CreateCharacterRequest;
 
 public class MoveScreen extends InputAdapter implements Screen {
@@ -60,7 +59,7 @@ public class MoveScreen extends InputAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Move Main", "clicked");
-                game.setScreen(new MainCityScreen(game,character));
+                game.setScreen(new MainCityScreen(game));
             }
         });
         moveBattleCityButton.addListener(new ClickListener() {

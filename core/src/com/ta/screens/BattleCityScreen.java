@@ -11,7 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
-import com.ta.data.CharacterRequest;
+import com.ta.data.CharacterResponse;
 import com.ta.data.EnemyRequest;
 import com.badlogic.gdx.graphics.Texture;
 
@@ -32,7 +32,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private UserService userService;
 
-    private CharacterRequest character;
+    private CharacterResponse character;
     private List<EnemyRequest> enemies;
 
     private static Image currentlyEnlargedIcon = null;
@@ -40,7 +40,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private Timer timer;
 
-    public BattleCityScreen(ClientGDX game, List<EnemyRequest> enemies, CharacterRequest character) {
+    public BattleCityScreen(ClientGDX game, List<EnemyRequest> enemies, CharacterResponse character) {
         this.game = game;
         this.enemies = enemies;
         this.character = character;
@@ -121,7 +121,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         updateEnemies(enemies);
     }
 
-    public void updateCharacter(CharacterRequest newCharacter) {
+    public void updateCharacter(CharacterResponse newCharacter) {
         this.character = newCharacter;
         leftEnemyTable.clear();  // Очистка текущих данных
         populateLeftEnemyTable(newCharacter);  // Добавление новых данных
@@ -139,7 +139,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         populateTurnOrderTable(turnOrder);  // Добавление новых данных
     }
 
-    private void populateLeftEnemyTable(CharacterRequest character) {
+    private void populateLeftEnemyTable(CharacterResponse character) {
         Table enemyRow = new Table();
         Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
         Label nameLabel = new Label(character.getCharacterName() + " " + character.getId(), skin);
