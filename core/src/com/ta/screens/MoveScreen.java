@@ -59,7 +59,7 @@ public class MoveScreen extends InputAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Move Main", "clicked");
-                game.setScreen(new MainCityScreen(game));
+                //game.setScreen(new MainCityScreen(game));
             }
         });
         moveBattleCityButton.addListener(new ClickListener() {
@@ -67,7 +67,7 @@ public class MoveScreen extends InputAdapter implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Move Battle", "clicked");
                 //game.setScreen(new BattleCityScreen(game));
-                userService.moveBattleCity(character);
+                //userService.moveBattleCity(character);
             }
         });
     }

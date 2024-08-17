@@ -276,7 +276,7 @@ public class UserService {
 
                     Gdx.app.log("chooseCharacter", "Character: " + characterResponse.getCharacterName());
 
-                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game)));
+                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game,characterResponse)));
 
                 } catch (Exception e) {
                     Gdx.app.log("chooseCharacter", "Error parsing JSON response", e);
