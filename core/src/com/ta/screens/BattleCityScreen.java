@@ -40,7 +40,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private Timer timer;
 
-    public BattleCityScreen(ClientGDX game, List<EnemyRequest> enemies, CharacterResponse character) {
+    public BattleCityScreen(ClientGDX game, CharacterResponse character, List<EnemyRequest> enemies) {
         this.game = game;
         this.enemies = enemies;
         this.character = character;

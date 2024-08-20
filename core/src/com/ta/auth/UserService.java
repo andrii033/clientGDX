@@ -298,7 +298,7 @@ public class UserService {
 
 
 
-    public void moveBattleCity(CreateCharacterRequest character) {
+    public void moveBattleCity(CharacterResponse character) {
         String userJson = "2";
 
         // Create the HTTP request
@@ -334,7 +334,7 @@ public class UserService {
                         Gdx.app.log("moveBattleCity enemies ", enemies.toString());
 
                         Gdx.app.postRunnable(() -> {
-                            //game.setScreen(new BattleCityScreen(game, enemies, character));
+                            game.setScreen(new BattleCityScreen(game,character,enemies));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("moveBattleCity", "Failed to parse response JSON", e);

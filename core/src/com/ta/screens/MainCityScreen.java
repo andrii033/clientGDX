@@ -77,7 +77,7 @@ public class MainCityScreen extends InputAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Move", "clicked");
-                //game.setScreen(new MoveScreen(game, character));
+                game.setScreen(new MoveScreen(game,characterResponse));
             }
         });
     }
