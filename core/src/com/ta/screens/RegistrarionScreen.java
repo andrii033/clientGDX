@@ -77,6 +77,13 @@ public class RegistrarionScreen extends InputAdapter implements Screen {
         table.add(registerButton).pad(10).bottom();
         table.add(messageLabel).pad(10).bottom().row();
 
+
+        usernameField.setText("username");
+        passwordField.setText("password");
+        rePasswordField.setText("password");
+        emailField.setText("email@email.com");
+
+
         stage.addActor(table);
 
         backButton.setPosition(10, 10);  // Bottom-left corner

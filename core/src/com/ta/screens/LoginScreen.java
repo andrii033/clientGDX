@@ -59,6 +59,10 @@ public class LoginScreen extends InputAdapter implements Screen {
         table.row();
         table.add(messageLabel).pad(10);
 
+
+        usernameField.setText("username");
+        passwordField.setText("password");
+
         stage.addActor(table);
 
         stage.setKeyboardFocus(usernameField);

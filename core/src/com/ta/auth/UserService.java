@@ -357,8 +357,10 @@ public class UserService {
         });
     }
 
-    public void fight(String id) {
+    public void fight(String id, BattleCityScreen screen) {
         String userJson = id;
+
+        System.out.println("id " + id);
 
         // Create the HTTP request
         HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
@@ -375,9 +377,16 @@ public class UserService {
 
                 if (statusCode == 200) {
                     try {
-                        Gdx.app.log("fight ", responseString);
+                        // Assuming the response is in JSON and it contains CharacterResponse and List<EnemyRequest>
+                        // Parse the response
+                        CharacterResponse updatedCharacter = parseCharacterResponse(responseString);
+                        List<EnemyRequest> updatedEnemies = parseEnemyRequests(responseString);
+
+                        Gdx.app.log("fight", "Response: " + responseString);
                         Gdx.app.postRunnable(() -> {
-                            //game.setScreen(new BattleCityScreen(game, enemies, character));
+                            // Update the screen with the new data
+                            screen.updateCharacter(updatedCharacter);
+                            screen.updateEnemies(updatedEnemies);
                         });
                     } catch (Exception e) {
                         Gdx.app.log("fight", "Failed to parse response JSON", e);
@@ -389,15 +398,31 @@ public class UserService {
 
             @Override
             public void failed(Throwable t) {
-
+                Gdx.app.log("fight", "Request failed", t);
             }
 
             @Override
             public void cancelled() {
-
+                Gdx.app.log("fight", "Request cancelled");
             }
         });
     }
+
+    private CharacterResponse parseCharacterResponse(String responseString) {
+        // Implement JSON parsing logic here to convert responseString to CharacterResponse
+        // Example using a JSON library like Gson:
+        // return new Gson().fromJson(responseString, CharacterResponse.class);
+        return new CharacterResponse(); // Replace with actual parsing logic
+    }
+
+    private List<EnemyRequest> parseEnemyRequests(String responseString) {
+        // Implement JSON parsing logic here to convert responseString to a list of EnemyRequest
+        // Example using a JSON library like Gson:
+        // Type listType = new TypeToken<List<EnemyRequest>>(){}.getType();
+        // return new Gson().fromJson(responseString, listType);
+        return new ArrayList<>(); // Replace with actual parsing logic
+    }
+
 
     public void party() {
         String userJson = "id"; //исправить потом

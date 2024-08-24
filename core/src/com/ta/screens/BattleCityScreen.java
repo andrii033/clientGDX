@@ -4,20 +4,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
 import com.ta.data.CharacterResponse;
 import com.ta.data.EnemyRequest;
-import com.badlogic.gdx.graphics.Texture;
 
 import java.util.List;
-import com.badlogic.gdx.utils.Timer;
-import com.badlogic.gdx.utils.Timer.Task;
 
 public class BattleCityScreen extends InputAdapter implements Screen {
     private final Stage stage;
@@ -38,6 +38,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private static Image currentlyEnlargedIcon = null;
     private static boolean isIconEnlarged = false;
 
+    private Integer enemyId;
+
     private Timer timer;
 
     public BattleCityScreen(ClientGDX game, CharacterResponse character, List<EnemyRequest> enemies) {
@@ -46,6 +48,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         this.character = character;
         this.stage = new Stage(new ScreenViewport());
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        enemyId = null;
         userService = new UserService(game);
 
         // Initialize tables
@@ -80,8 +83,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                 new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        userService.fight(String.valueOf(1));
-                        userService.party();            //временно добавлено потом изменить
+                        // Call fight method with the current screen instance
+                        userService.fight(String.valueOf(enemyId), BattleCityScreen.this);
                     }
                 }
         );
@@ -111,7 +114,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private long getTimeLeftFromServer() {
         // Simulate server call - replace this with actual logic to get time left from the server
-        return 10000 - (System.currentTimeMillis() % 10000);
+        long timeLeftMillis = 10000 - (System.currentTimeMillis() % 10000);
+        return timeLeftMillis / 1000; // Convert milliseconds to seconds
     }
 
     @Override
@@ -149,8 +153,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         icon.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.log("Icon Clicked", "Enemy: " + character.getCharacterName() + " ID: " + character.getId());
-                // Add your logic here for what happens when the icon is clicked
+                Gdx.app.log("Icon Clicked", "Character: " + character.getCharacterName() + " ID: " + character.getId());
             }
         });
 
@@ -176,6 +179,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.log("Icon Clicked", "Enemy: " + enemy.getName() + " ID: " + enemy.getId());
+                    enemyId= Math.toIntExact(enemy.getId());
                     if (currentlyEnlargedIcon != null) {
                         currentlyEnlargedIcon.setSize(70, 70);
                     }
