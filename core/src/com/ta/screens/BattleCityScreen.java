@@ -84,7 +84,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         // Call fight method with the current screen instance
-                        userService.fight(String.valueOf(enemyId), BattleCityScreen.this);
+                        userService.fight(String.valueOf(enemyId), character,enemies);
                     }
                 }
         );
