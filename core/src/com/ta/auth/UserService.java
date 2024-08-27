@@ -385,11 +385,12 @@ public class UserService {
                         }
 
                         FightRequest fightRequest = json.readValue(FightRequest.class, jsonValue);
-                        CharacterRequest character = mapCharacterRequestToCharacter(fightRequest.getCharacterRequest());
+                        CharacterRequest characterRequest = fightRequest.getCharacterRequest();
+                        List<EnemyRequest> enemyRequests = fightRequest.getEnemyRequest();
 
                         Gdx.app.log("fight", "Response: " + responseString);
                         Gdx.app.postRunnable(() -> {
-                            game.setScreen(new BattleCityScreen(game, character, enemies));
+                            game.setScreen(new BattleCityScreen(game, characterRequest, enemies));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("fight", "Failed to parse response JSON", e);
@@ -410,52 +411,6 @@ public class UserService {
             }
         });
     }
-
-    public CharacterRequest mapCharacterRequestToCharacter(CharacterRequest characterRequest) {
-        CharacterRequest character = new CharacterRequest();
-
-        character.setCharacterName(characterRequest.getCharacterName());
-        character.setId(characterRequest.getId());
-
-        character.setStr(characterRequest.getStr());
-        character.setAgi(characterRequest.getAgi());
-        character.setInte(characterRequest.getInte());
-
-        character.setDef(characterRequest.getDef());
-        character.setHp(characterRequest.getHp());
-        character.setMana(characterRequest.getMana());
-
-        character.setPhysicalHarm(characterRequest.getPhysicalHarm());
-        character.setArmorPiercing(characterRequest.getArmorPiercing());
-        character.setReduceBlockDam(characterRequest.getReduceBlockDam());
-        character.setMaxHealth(characterRequest.getMaxHealth());
-
-        character.setCritChance(characterRequest.getCritChance());
-        character.setAttackSpeed(characterRequest.getAttackSpeed());
-        character.setAvoidance(characterRequest.getAvoidance());
-        character.setBlockChance(characterRequest.getBlockChance());
-
-        character.setMagicDam(characterRequest.getMagicDam());
-        character.setMagicCritChance(characterRequest.getMagicCritChance());
-        character.setManaRegen(characterRequest.getManaRegen());
-        character.setMaxMana(characterRequest.getMaxMana());
-
-        character.setGold(characterRequest.getGold());
-        character.setRes(characterRequest.getRes());
-
-        character.setExp(characterRequest.getExp());
-        character.setLvl(characterRequest.getLvl());
-
-        character.setUnallocatedMainPoints(characterRequest.getUnallocatedMainPoints());
-        character.setUnallocatedStrPoints(characterRequest.getUnallocatedStrPoints());
-        character.setUnallocatedAgiPoints(characterRequest.getUnallocatedAgiPoints());
-        character.setUnallocatedIntePoints(characterRequest.getUnallocatedIntePoints());
-
-        character.setLatestDamage(characterRequest.getLatestDamage());
-
-        return character;
-    }
-
 
 
     public void party() {
