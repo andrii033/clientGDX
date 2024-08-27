@@ -12,8 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
-import com.ta.data.CharacterResponse;
-import com.ta.data.CreateCharacterRequest;
+import com.ta.data.CharacterRequest;
 
 public class MainCityScreen extends InputAdapter implements Screen {
 
@@ -21,11 +20,11 @@ public class MainCityScreen extends InputAdapter implements Screen {
     private Skin skin;
     private TextButton moveButton;
     private ClientGDX game;
-    private CharacterResponse characterResponse;
+    private CharacterRequest characterRequest;
 
-    public MainCityScreen(ClientGDX game, CharacterResponse characterResponse) {
+    public MainCityScreen(ClientGDX game, CharacterRequest characterRequest) {
         this.game = game;
-        this.characterResponse = characterResponse;
+        this.characterRequest = characterRequest;
     }
 
     @Override
@@ -43,7 +42,7 @@ public class MainCityScreen extends InputAdapter implements Screen {
         table.center();
 
         // Character button in the top-left corner
-        TextButton characterButton = new TextButton(characterResponse.getCharacterName(), skin);
+        TextButton characterButton = new TextButton(characterRequest.getCharacterName(), skin);
         characterButton.getLabel().setFontScale(1.5f);
         table.top().left();
         table.add(characterButton).size(250, 100).expand().fill().padBottom(10);
@@ -77,7 +76,7 @@ public class MainCityScreen extends InputAdapter implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.log("Move", "clicked");
-                game.setScreen(new MoveScreen(game,characterResponse));
+                game.setScreen(new MoveScreen(game, characterRequest));
             }
         });
     }

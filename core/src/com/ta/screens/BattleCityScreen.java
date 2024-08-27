@@ -14,7 +14,7 @@ import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
-import com.ta.data.CharacterResponse;
+import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
 
 import java.util.List;
@@ -32,7 +32,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private UserService userService;
 
-    private CharacterResponse character;
+    private CharacterRequest character;
     private List<EnemyRequest> enemies;
 
     private static Image currentlyEnlargedIcon = null;
@@ -42,7 +42,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private Timer timer;
 
-    public BattleCityScreen(ClientGDX game, CharacterResponse character, List<EnemyRequest> enemies) {
+    public BattleCityScreen(ClientGDX game, CharacterRequest character, List<EnemyRequest> enemies) {
         this.game = game;
         this.enemies = enemies;
         this.character = character;
@@ -84,7 +84,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         // Call fight method with the current screen instance
-                        userService.fight(String.valueOf(enemyId), character,enemies);
+                        userService.fight(String.valueOf(enemyId),enemies);
                     }
                 }
         );
@@ -125,7 +125,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         updateEnemies(enemies);
     }
 
-    public void updateCharacter(CharacterResponse newCharacter) {
+    public void updateCharacter(CharacterRequest newCharacter) {
         this.character = newCharacter;
         leftEnemyTable.clear();  // Очистка текущих данных
         populateLeftEnemyTable(newCharacter);  // Добавление новых данных
@@ -143,7 +143,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         populateTurnOrderTable(turnOrder);  // Добавление новых данных
     }
 
-    private void populateLeftEnemyTable(CharacterResponse character) {
+    private void populateLeftEnemyTable(CharacterRequest character) {
         Table enemyRow = new Table();
         Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
         Label nameLabel = new Label(character.getCharacterName() + " " + character.getId(), skin);

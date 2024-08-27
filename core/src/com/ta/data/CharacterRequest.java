@@ -3,7 +3,8 @@ package com.ta.data;
 import lombok.Data;
 
 @Data
-public class CharacterResponse {
+public class CharacterRequest {
+
     private String characterName;
     private Long id;
 
@@ -40,4 +41,7 @@ public class CharacterResponse {
     private int unallocatedStrPoints;
     private int unallocatedAgiPoints;
     private int unallocatedIntePoints;
+
+    private int latestDamage;
+    private boolean wait;
 }

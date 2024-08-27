@@ -115,7 +115,7 @@ public class UserService {
                         JSONObject responseBody = new JSONObject(responseString);
                         token = responseBody.getString("token");
                         Gdx.app.log("UserService", "Signed in successfully, token: " + token);
-                       // Gdx.app.postRunnable(() -> game.setScreen(new ChooseCharacterScreen(game)));
+                        // Gdx.app.postRunnable(() -> game.setScreen(new ChooseCharacterScreen(game)));
                         getCharacters(); // get list and open ChooseCharacterScreen
                     } catch (Exception e) {
                         Gdx.app.log("UserService", "Failed to parse response JSON", e);
@@ -162,8 +162,8 @@ public class UserService {
                     if (statusCode == 200 && responseString != null && !responseString.trim().isEmpty()) {
                         Json json = new Json();
                         Array<CreateCharacterRequest> characters = json.fromJson(Array.class, CreateCharacterRequest.class, responseString);
-                        Gdx.app.postRunnable(()->{
-                            game.setScreen(new ChooseCharacterScreen(game,characters));
+                        Gdx.app.postRunnable(() -> {
+                            game.setScreen(new ChooseCharacterScreen(game, characters));
                         });
                     } else {
                         Gdx.app.log("getCharacters", "Empty or invalid response received");
@@ -267,16 +267,16 @@ public class UserService {
 
                 try {
                     Json json = new Json();
-                    CharacterResponse characterResponse = json.fromJson(CharacterResponse.class, responseString);
+                    CharacterRequest characterRequest = json.fromJson(CharacterRequest.class, responseString);
 
-                    if (characterResponse == null) {
+                    if (characterRequest == null) {
                         Gdx.app.log("chooseCharacter", "Failed to parse JSON response.");
                         return;
                     }
 
-                    Gdx.app.log("chooseCharacter", "Character: " + characterResponse.getCharacterName());
+                    Gdx.app.log("chooseCharacter", "Character: " + characterRequest.getCharacterName());
 
-                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game,characterResponse)));
+                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game, characterRequest)));
 
                 } catch (Exception e) {
                     Gdx.app.log("chooseCharacter", "Error parsing JSON response", e);
@@ -296,9 +296,7 @@ public class UserService {
     }
 
 
-
-
-    public void moveBattleCity(CharacterResponse character) {
+    public void moveBattleCity(CharacterRequest character) {
         String userJson = "2";
 
         // Create the HTTP request
@@ -334,7 +332,7 @@ public class UserService {
                         Gdx.app.log("moveBattleCity enemies ", enemies.toString());
 
                         Gdx.app.postRunnable(() -> {
-                            game.setScreen(new BattleCityScreen(game,character,enemies));
+                            game.setScreen(new BattleCityScreen(game, character, enemies));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("moveBattleCity", "Failed to parse response JSON", e);
@@ -357,7 +355,7 @@ public class UserService {
         });
     }
 
-    public void fight(String id, CharacterResponse character, List<EnemyRequest> enemies) {
+    public void fight(String id, List<EnemyRequest> enemies) {
         String userJson = id;
 
         System.out.println("id " + id);
@@ -377,12 +375,21 @@ public class UserService {
 
                 if (statusCode == 200) {
                     try {
-//                        CharacterResponse updatedCharacter = parseCharacterResponse(responseString);
-//                        List<EnemyRequest> updatedEnemies = parseEnemyRequests(responseString);
+                        Json json = new Json();
+                        JsonReader jsonReader = new JsonReader();
+                        JsonValue jsonValue = jsonReader.parse(responseString);
+
+                        if (jsonValue == null) {
+                            Gdx.app.log("fight", "Failed to parse JSON response.");
+                            return;
+                        }
+
+                        FightRequest fightRequest = json.readValue(FightRequest.class, jsonValue);
+                        CharacterRequest character = mapCharacterRequestToCharacter(fightRequest.getCharacterRequest());
 
                         Gdx.app.log("fight", "Response: " + responseString);
                         Gdx.app.postRunnable(() -> {
-                            game.setScreen(new BattleCityScreen(game,character,enemies));
+                            game.setScreen(new BattleCityScreen(game, character, enemies));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("fight", "Failed to parse response JSON", e);
@@ -403,6 +410,52 @@ public class UserService {
             }
         });
     }
+
+    public CharacterRequest mapCharacterRequestToCharacter(CharacterRequest characterRequest) {
+        CharacterRequest character = new CharacterRequest();
+
+        character.setCharacterName(characterRequest.getCharacterName());
+        character.setId(characterRequest.getId());
+
+        character.setStr(characterRequest.getStr());
+        character.setAgi(characterRequest.getAgi());
+        character.setInte(characterRequest.getInte());
+
+        character.setDef(characterRequest.getDef());
+        character.setHp(characterRequest.getHp());
+        character.setMana(characterRequest.getMana());
+
+        character.setPhysicalHarm(characterRequest.getPhysicalHarm());
+        character.setArmorPiercing(characterRequest.getArmorPiercing());
+        character.setReduceBlockDam(characterRequest.getReduceBlockDam());
+        character.setMaxHealth(characterRequest.getMaxHealth());
+
+        character.setCritChance(characterRequest.getCritChance());
+        character.setAttackSpeed(characterRequest.getAttackSpeed());
+        character.setAvoidance(characterRequest.getAvoidance());
+        character.setBlockChance(characterRequest.getBlockChance());
+
+        character.setMagicDam(characterRequest.getMagicDam());
+        character.setMagicCritChance(characterRequest.getMagicCritChance());
+        character.setManaRegen(characterRequest.getManaRegen());
+        character.setMaxMana(characterRequest.getMaxMana());
+
+        character.setGold(characterRequest.getGold());
+        character.setRes(characterRequest.getRes());
+
+        character.setExp(characterRequest.getExp());
+        character.setLvl(characterRequest.getLvl());
+
+        character.setUnallocatedMainPoints(characterRequest.getUnallocatedMainPoints());
+        character.setUnallocatedStrPoints(characterRequest.getUnallocatedStrPoints());
+        character.setUnallocatedAgiPoints(characterRequest.getUnallocatedAgiPoints());
+        character.setUnallocatedIntePoints(characterRequest.getUnallocatedIntePoints());
+
+        character.setLatestDamage(characterRequest.getLatestDamage());
+
+        return character;
+    }
+
 
 
     public void party() {
