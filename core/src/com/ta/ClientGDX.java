@@ -8,7 +8,6 @@ import com.ta.screens.LoginSignupScreen;
 public class ClientGDX extends Game {
 	@Override
 	public void create() {
-		Gdx.app.log("ClientGDX", "create");
 		this.setScreen(new LoginSignupScreen(this));
 	}
 }

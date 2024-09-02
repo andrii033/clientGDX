@@ -332,7 +332,7 @@ public class UserService {
                         Gdx.app.log("moveBattleCity enemies ", enemies.toString());
 
                         Gdx.app.postRunnable(() -> {
-                            game.setScreen(new BattleCityScreen(game, character, enemies));
+                            game.setScreen(new BattleCityScreen(game, character, enemies,token));
                         });
                     } catch (Exception e) {
                         Gdx.app.log("moveBattleCity", "Failed to parse response JSON", e);
@@ -355,62 +355,6 @@ public class UserService {
         });
     }
 
-    public void fight(String id, List<EnemyRequest> enemies) {
-        String userJson = id;
-
-        System.out.println("id " + id);
-
-        // Create the HTTP request
-        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
-        httpRequest.setUrl("http://localhost:8080/character/fight");
-        httpRequest.setHeader("Content-Type", "application/json");
-        httpRequest.setHeader("Authorization", "Bearer " + token);
-        httpRequest.setContent(userJson);
-
-        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
-            @Override
-            public void handleHttpResponse(HttpResponse httpResponse) {
-                int statusCode = httpResponse.getStatus().getStatusCode();
-                String responseString = httpResponse.getResultAsString();
-
-                if (statusCode == 200) {
-                    try {
-                        Json json = new Json();
-                        JsonReader jsonReader = new JsonReader();
-                        JsonValue jsonValue = jsonReader.parse(responseString);
-
-                        if (jsonValue == null) {
-                            Gdx.app.log("fight", "Failed to parse JSON response.");
-                            return;
-                        }
-
-                        FightRequest fightRequest = json.readValue(FightRequest.class, jsonValue);
-                        CharacterRequest characterRequest = fightRequest.getCharacterRequest();
-                        List<EnemyRequest> enemyRequests = fightRequest.getEnemyRequest();
-
-                        Gdx.app.log("fight", "Response: " + responseString);
-                        Gdx.app.postRunnable(() -> {
-                            game.setScreen(new BattleCityScreen(game, characterRequest, enemies));
-                        });
-                    } catch (Exception e) {
-                        Gdx.app.log("fight", "Failed to parse response JSON", e);
-                    }
-                } else {
-                    Gdx.app.log("fight", "Failed: " + statusCode);
-                }
-            }
-
-            @Override
-            public void failed(Throwable t) {
-                Gdx.app.log("fight", "Request failed", t);
-            }
-
-            @Override
-            public void cancelled() {
-                Gdx.app.log("fight", "Request cancelled");
-            }
-        });
-    }
 
 
     public void party() {

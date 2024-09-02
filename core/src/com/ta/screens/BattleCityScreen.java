@@ -13,9 +13,9 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
-import com.ta.auth.UserService;
 import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
+import com.ta.game.DungeonService;
 
 import java.util.List;
 
@@ -30,26 +30,34 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private TextButton attackButton;
     private Label timeLeftLabel;
 
-    private UserService userService;
+    private DungeonService dungeonService;
 
     private CharacterRequest character;
     private List<EnemyRequest> enemies;
 
-    private static Image currentlyEnlargedIcon = null;
+    private static Image currentlyEnlargedIcon ;
+    private Long enlargedEnemyId;
     private static boolean isIconEnlarged = false;
 
     private Integer enemyId;
 
     private Timer timer;
 
-    public BattleCityScreen(ClientGDX game, CharacterRequest character, List<EnemyRequest> enemies) {
+    private long lastFightRequestTime = 0;
+    private static final long REQUEST_INTERVAL = 5000; // 5 seconds
+
+
+    public BattleCityScreen(ClientGDX game, CharacterRequest character, List<EnemyRequest> enemies, String token) {
         this.game = game;
         this.enemies = enemies;
         this.character = character;
         this.stage = new Stage(new ScreenViewport());
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
-        enemyId = null;
-        userService = new UserService(game);
+        enemyId = Math.toIntExact(enemies.get(0).getId());
+
+
+        // Pass this screen to the UserService
+        dungeonService = new DungeonService( this);
 
         // Initialize tables
         rootTable = new Table();
@@ -84,10 +92,16 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         // Call fight method with the current screen instance
-                        userService.fight(String.valueOf(enemyId),enemies);
+                        //userService.fight(String.valueOf(enemyId));
+                        dungeonService.fight(String.valueOf(enemyId),token);
                     }
                 }
         );
+
+        if (currentlyEnlargedIcon != null) {
+            currentlyEnlargedIcon.setSize(100, 100);
+            isIconEnlarged = true;
+        }
 
         stage.addActor(rootTable);
 
@@ -98,19 +112,30 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             public void run() {
                 // Perform periodic updates here
                 updateTimeLeft();
+                dungeonService.fight(String.valueOf(enemyId),token);
             }
-        }, 1, 1); // Schedule the task to run every second
+        }, 1, 3); // Schedule the task to run every second
     }
 
+
+
     private void updateTimeLeft() {
-        // Fetch the time left from the server (this could be done through WebSocket or HTTP request)
-        // For this example, let's just simulate it
-        long timeLeft = getTimeLeftFromServer(); // Replace with actual server call
+        long timeLeft = getTimeLeftFromServer();
 
         Gdx.app.postRunnable(() -> {
             timeLeftLabel.setText("Time Left: " + timeLeft + "ms");
+
+            // Get the current time
+            long currentTime = System.currentTimeMillis();
+
+            // Check if enough time has passed since the last request
+            if (currentTime - lastFightRequestTime >= REQUEST_INTERVAL) {
+                // Update the time of the last request
+                lastFightRequestTime = currentTime;
+            }
         });
     }
+
 
     private long getTimeLeftFromServer() {
         // Simulate server call - replace this with actual logic to get time left from the server
@@ -123,6 +148,11 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage);
         updateCharacter(character);
         updateEnemies(enemies);
+
+//        if (currentlyEnlargedIcon != null) {
+//            currentlyEnlargedIcon.setSize(100, 100);
+//            isIconEnlarged = true;
+//        }
     }
 
     public void updateCharacter(CharacterRequest newCharacter) {
@@ -172,31 +202,37 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             Label hpLabel = new Label("HP: " + enemy.getHp(), skin);
             Label latestDamLabel = new Label("Latest Damage: " + enemy.getLatestDam(), skin);
 
+            // Check if this is the currently enlarged enemy
+            if (enlargedEnemyId != null && enlargedEnemyId.equals(enemy.getId())) {
+                icon.setSize(100, 100);
+                currentlyEnlargedIcon = icon; // Keep reference to the enlarged icon
+            } else {
+                icon.setSize(70, 70);
+            }
+
             // Add input listener to the icon
             icon.addListener(new ClickListener() {
-                boolean enlarged = false;
-
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.log("Icon Clicked", "Enemy: " + enemy.getName() + " ID: " + enemy.getId());
-                    enemyId= Math.toIntExact(enemy.getId());
+                    enemyId = Math.toIntExact(enemy.getId());
+
                     if (currentlyEnlargedIcon != null) {
                         currentlyEnlargedIcon.setSize(70, 70);
                     }
 
                     if (currentlyEnlargedIcon == icon) {
                         currentlyEnlargedIcon = null;
-                        isIconEnlarged = false;
+                        enlargedEnemyId = null;
                     } else {
                         icon.setSize(100, 100);
                         currentlyEnlargedIcon = icon;
-                        isIconEnlarged = true;
+                        enlargedEnemyId = enemy.getId();
                     }
-                    enlarged = !enlarged;
                 }
             });
 
-            enemyRow.add(icon).size(70, 70).pad(5);
+            enemyRow.add(icon).size(icon.getWidth(), icon.getHeight()).pad(5); // Use icon size
             enemyRow.add(nameLabel).pad(5);
             enemyRow.add(hpLabel).pad(5);
             enemyRow.add(latestDamLabel).pad(5);
@@ -204,6 +240,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             rightEnemyTable.add(enemyRow).row();
         }
     }
+
 
     private void populateTurnOrderTable(List<EnemyRequest> turnOrder) {
         for (EnemyRequest entity : turnOrder) {
@@ -251,5 +288,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         if (timer != null) {
             timer.clear();
         }
+        currentlyEnlargedIcon = null;
+        enlargedEnemyId = null;
     }
+
 }

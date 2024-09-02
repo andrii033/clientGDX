@@ -102,5 +102,7 @@ project(":core") {
         implementation 'org.json:json:20210307'
         compileOnly "org.projectlombok:lombok:$lombokVersion" // Specify Lombok version
         annotationProcessor "org.projectlombok:lombok:$lombokVersion" // Specify Lombok version
+
+        implementation 'org.java-websocket:Java-WebSocket:1.5.2'
     }
 }
