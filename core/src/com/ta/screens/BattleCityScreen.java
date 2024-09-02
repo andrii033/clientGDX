@@ -15,8 +15,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
 import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
+import com.ta.data.TurnOrderEntry;
 import com.ta.game.DungeonService;
 
+import java.util.*;
 import java.util.List;
 
 public class BattleCityScreen extends InputAdapter implements Screen {
@@ -28,7 +30,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private final Table rightEnemyTable;
     private final Table turnOrderTable;
     private TextButton attackButton;
-    private Label timeLeftLabel;
 
     private DungeonService dungeonService;
 
@@ -66,7 +67,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         leftEnemyTable = new Table();
         rightEnemyTable = new Table();
         turnOrderTable = new Table();
-        timeLeftLabel = new Label("Time Left: ", skin);
 
         // Set table alignments
         leftEnemyTable.top().left();
@@ -78,9 +78,9 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         rootTable.add(rightEnemyTable).expand().top().right().pad(10).row();
         rootTable.add(turnOrderTable).expandX().bottom().center().pad(10).colspan(2);
 
-        // Add time left label
-        rootTable.row(); // Move to the next row
-        rootTable.add(timeLeftLabel).expand().center().colspan(2).pad(10);
+//        // Add time left label
+//        rootTable.row(); // Move to the next row
+//        rootTable.add(timeLeftLabel).expand().center().colspan(2).pad(10);
 
         // Add attack button to the root table
         attackButton = new TextButton("Attack", skin);
@@ -123,7 +123,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         long timeLeft = getTimeLeftFromServer();
 
         Gdx.app.postRunnable(() -> {
-            timeLeftLabel.setText("Time Left: " + timeLeft + "ms");
 
             // Get the current time
             long currentTime = System.currentTimeMillis();
@@ -243,10 +242,25 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
 
     private void populateTurnOrderTable(List<EnemyRequest> turnOrder) {
+        List<TurnOrderEntry> turnOrderList = new ArrayList<>();
+
         for (EnemyRequest entity : turnOrder) {
+            turnOrderList.add(new TurnOrderEntry(entity.getInitiative(), entity.getName()));
+        }
+
+        // Sort the list by initiative using Collections.sort
+        Collections.sort(turnOrderList, new Comparator<TurnOrderEntry>() {
+            @Override
+            public int compare(TurnOrderEntry entry1, TurnOrderEntry entry2) {
+                return Integer.compare(entry1.getInitiative(), entry2.getInitiative());
+            }
+        });
+
+        // Populate the UI table
+        for (TurnOrderEntry entry : turnOrderList) {
             Table entityRow = new Table();
             Image icon = new Image(new Texture(Gdx.files.internal("grass.png"))); // Placeholder for enemy icon
-            Label nameLabel = new Label(entity.getName(), skin);
+            Label nameLabel = new Label(entry.getName(), skin);
 
             entityRow.add(icon).size(32, 32).pad(5);
             entityRow.add(nameLabel).pad(5);
@@ -254,6 +268,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             turnOrderTable.add(entityRow).pad(10);
         }
     }
+
+
 
     @Override
     public void render(float delta) {
