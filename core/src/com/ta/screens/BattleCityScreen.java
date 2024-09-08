@@ -15,7 +15,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
 import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
-import com.ta.data.TurnOrderEntry;
 import com.ta.game.DungeonService;
 
 import java.util.*;
@@ -92,7 +91,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         // Call fight method with the current screen instance
-                        //userService.fight(String.valueOf(enemyId));
                         dungeonService.fight(String.valueOf(enemyId),token);
                     }
                 }
@@ -112,9 +110,10 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             public void run() {
                 // Perform periodic updates here
                 updateTimeLeft();
+                Gdx.app.log("BattleCityScreen timer ","timer");
                 dungeonService.fight(String.valueOf(enemyId),token);
             }
-        }, 1, 3); // Schedule the task to run every second
+        }, 1, 2); // Schedule the task to run every second
     }
 
 
@@ -152,8 +151,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 //            currentlyEnlargedIcon.setSize(100, 100);
 //            isIconEnlarged = true;
 //        }
-    }
 
+    }
     public void updateCharacter(CharacterRequest newCharacter) {
         this.character = newCharacter;
         leftEnemyTable.clear();  // Очистка текущих данных
@@ -164,13 +163,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         this.enemies = newEnemies;
         rightEnemyTable.clear();  // Очистка текущих данных
         populateRightEnemyTable(newEnemies);  // Добавление новых данных
-        updateTurnOrder(newEnemies);  // Обновление порядка хода
     }
 
-    private void updateTurnOrder(List<EnemyRequest> turnOrder) {
-        turnOrderTable.clear();  // Очистка текущих данных
-        populateTurnOrderTable(turnOrder);  // Добавление новых данных
-    }
 
     private void populateLeftEnemyTable(CharacterRequest character) {
         Table enemyRow = new Table();
@@ -240,34 +234,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         }
     }
 
-
-    private void populateTurnOrderTable(List<EnemyRequest> turnOrder) {
-        List<TurnOrderEntry> turnOrderList = new ArrayList<>();
-
-        for (EnemyRequest entity : turnOrder) {
-            turnOrderList.add(new TurnOrderEntry(entity.getInitiative(), entity.getName()));
-        }
-
-        // Sort the list by initiative using Collections.sort
-        Collections.sort(turnOrderList, new Comparator<TurnOrderEntry>() {
-            @Override
-            public int compare(TurnOrderEntry entry1, TurnOrderEntry entry2) {
-                return Integer.compare(entry1.getInitiative(), entry2.getInitiative());
-            }
-        });
-
-        // Populate the UI table
-        for (TurnOrderEntry entry : turnOrderList) {
-            Table entityRow = new Table();
-            Image icon = new Image(new Texture(Gdx.files.internal("grass.png"))); // Placeholder for enemy icon
-            Label nameLabel = new Label(entry.getName(), skin);
-
-            entityRow.add(icon).size(32, 32).pad(5);
-            entityRow.add(nameLabel).pad(5);
-
-            turnOrderTable.add(entityRow).pad(10);
-        }
-    }
 
 
 

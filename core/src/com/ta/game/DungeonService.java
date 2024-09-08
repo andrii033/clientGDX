@@ -23,7 +23,7 @@ public class DungeonService {
     public void fight(String id, String token) {
         String userJson = id;
 
-        System.out.println("id " + id);
+
 
         // Create the HTTP request
         Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
@@ -53,7 +53,7 @@ public class DungeonService {
                         CharacterRequest characterRequest = fightRequest.getCharacterRequest();
                         List<EnemyRequest> enemyRequests = fightRequest.getEnemyRequest();
 
-                        Gdx.app.log("fight", "Response: " + responseString);
+                        //Gdx.app.log("fight", "Response: " + responseString);
 
                         // Update the existing screen's data
                         Gdx.app.postRunnable(() -> {
