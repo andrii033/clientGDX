@@ -77,10 +77,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         rootTable.add(rightEnemyTable).expand().top().right().pad(10).row();
         rootTable.add(turnOrderTable).expandX().bottom().center().pad(10).colspan(2);
 
-//        // Add time left label
-//        rootTable.row(); // Move to the next row
-//        rootTable.add(timeLeftLabel).expand().center().colspan(2).pad(10);
-
         // Add attack button to the root table
         attackButton = new TextButton("Attack", skin);
         attackButton.setSize(200, 100);
@@ -110,7 +106,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             public void run() {
                 // Perform periodic updates here
                 updateTimeLeft();
-                Gdx.app.log("BattleCityScreen timer ","timer");
                 dungeonService.fight(String.valueOf(enemyId),token);
             }
         }, 1, 2); // Schedule the task to run every second
@@ -122,7 +117,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         long timeLeft = getTimeLeftFromServer();
 
         Gdx.app.postRunnable(() -> {
-
             // Get the current time
             long currentTime = System.currentTimeMillis();
 
@@ -146,11 +140,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         Gdx.input.setInputProcessor(stage);
         updateCharacter(character);
         updateEnemies(enemies);
-
-//        if (currentlyEnlargedIcon != null) {
-//            currentlyEnlargedIcon.setSize(100, 100);
-//            isIconEnlarged = true;
-//        }
 
     }
     public void updateCharacter(CharacterRequest newCharacter) {
