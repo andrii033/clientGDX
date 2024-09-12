@@ -41,7 +41,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private Integer enemyId;
 
-    private Timer timer;
+    public Timer timer;
 
     private long lastFightRequestTime = 0;
     private static final long REQUEST_INTERVAL = 5000; // 5 seconds
@@ -57,7 +57,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
 
         // Pass this screen to the UserService
-        dungeonService = new DungeonService( this);
+        dungeonService = new DungeonService( this,game);
 
         // Initialize tables
         rootTable = new Table();
@@ -257,10 +257,11 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         stage.dispose();
         skin.dispose();
         if (timer != null) {
-            timer.clear();
+            timer.stop();
         }
         currentlyEnlargedIcon = null;
         enlargedEnemyId = null;
+
     }
 
 }

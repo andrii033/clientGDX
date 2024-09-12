@@ -5,6 +5,8 @@ import com.badlogic.gdx.Net;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.ta.ClientGDX;
+import com.ta.auth.UserService;
 import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
 import com.ta.data.FightRequest;
@@ -15,15 +17,15 @@ import java.util.List;
 public class DungeonService {
 
     private final BattleCityScreen battleCityScreen;
+    private final ClientGDX game;
 
-    public DungeonService(BattleCityScreen battleCityScreen) {
+    public DungeonService(BattleCityScreen battleCityScreen, ClientGDX game) {
         this.battleCityScreen = battleCityScreen;
+        this.game = game;
     }
 
     public void fight(String id, String token) {
         String userJson = id;
-
-
 
         // Create the HTTP request
         Net.HttpRequest httpRequest = new Net.HttpRequest(Net.HttpMethods.POST);
@@ -53,13 +55,22 @@ public class DungeonService {
                         CharacterRequest characterRequest = fightRequest.getCharacterRequest();
                         List<EnemyRequest> enemyRequests = fightRequest.getEnemyRequest();
 
-                        //Gdx.app.log("fight", "Response: " + responseString);
+                        int sum = 0;
+                        for (EnemyRequest enemies : enemyRequests) {
+                            sum += enemies.getHp();
+                        }
+                        if (sum <= 0) {
+                            battleCityScreen.timer.stop();
+                            UserService userService = new UserService(game);
+                            userService.chooseCharacter(String.valueOf(1));
+                        } else {
+                            // Update the existing screen's data
+                            Gdx.app.postRunnable(() -> {
+                                battleCityScreen.updateCharacter(characterRequest);
+                                battleCityScreen.updateEnemies(enemyRequests);
+                            });
+                        }
 
-                        // Update the existing screen's data
-                        Gdx.app.postRunnable(() -> {
-                            battleCityScreen.updateCharacter(characterRequest);
-                            battleCityScreen.updateEnemies(enemyRequests);
-                        });
                     } catch (Exception e) {
                         Gdx.app.log("fight", "Failed to parse response JSON", e);
                     }

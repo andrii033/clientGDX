@@ -44,5 +44,5 @@ public class CharacterRequest {
 
     private int latestDamage;
     private int initiative;
-    private boolean wait;
+    private boolean win;
 }
