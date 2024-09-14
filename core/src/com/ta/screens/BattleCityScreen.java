@@ -17,7 +17,6 @@ import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
 import com.ta.game.DungeonService;
 
-import java.util.*;
 import java.util.List;
 
 public class BattleCityScreen extends InputAdapter implements Screen {
@@ -29,6 +28,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private final Table rightEnemyTable;
     private final Table turnOrderTable;
     private TextButton attackButton;
+    private Label label;
 
     private DungeonService dungeonService;
 
@@ -42,10 +42,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private Integer enemyId;
 
     public Timer timer;
-
-    private long lastFightRequestTime = 0;
-    private static final long REQUEST_INTERVAL = 5000; // 5 seconds
-
+    private static int countTime;
 
     public BattleCityScreen(ClientGDX game, CharacterRequest character, List<EnemyRequest> enemies, String token) {
         this.game = game;
@@ -54,7 +51,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         this.stage = new Stage(new ScreenViewport());
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         enemyId = Math.toIntExact(enemies.get(0).getId());
-
 
         // Pass this screen to the UserService
         dungeonService = new DungeonService( this,game);
@@ -82,6 +78,11 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         attackButton.setSize(200, 100);
         rootTable.row(); // Move to the next row
         rootTable.add(attackButton).expand().center().colspan(2).pad(10);
+
+        label = new Label("text", skin);
+        rootTable.row();
+        rootTable.add(label).expand().center().colspan(2).pad(10);
+
         attackButton.addListener(
                 new ClickListener() {
                     @Override
@@ -104,35 +105,13 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         timer.scheduleTask(new Task() {
             @Override
             public void run() {
-                // Perform periodic updates here
-                updateTimeLeft();
                 dungeonService.fight(String.valueOf(enemyId),token);
+                if(countTime>=0) {
+                    label.setText("time: " + countTime);
+                    countTime--;
+                }
             }
-        }, 1, 2); // Schedule the task to run every second
-    }
-
-
-
-    private void updateTimeLeft() {
-        long timeLeft = getTimeLeftFromServer();
-
-        Gdx.app.postRunnable(() -> {
-            // Get the current time
-            long currentTime = System.currentTimeMillis();
-
-            // Check if enough time has passed since the last request
-            if (currentTime - lastFightRequestTime >= REQUEST_INTERVAL) {
-                // Update the time of the last request
-                lastFightRequestTime = currentTime;
-            }
-        });
-    }
-
-
-    private long getTimeLeftFromServer() {
-        // Simulate server call - replace this with actual logic to get time left from the server
-        long timeLeftMillis = 10000 - (System.currentTimeMillis() % 10000);
-        return timeLeftMillis / 1000; // Convert milliseconds to seconds
+        }, 1, 1); // Schedule the task to run every second
     }
 
     @Override
@@ -143,9 +122,17 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     }
     public void updateCharacter(CharacterRequest newCharacter) {
+        boolean hasChanges = !character.getCharacterName().equals(newCharacter.getCharacterName())
+                || character.getHp() != newCharacter.getHp()
+                || character.getMana() != newCharacter.getMana()
+                || character.getExp() != newCharacter.getExp();
+        if(hasChanges){
+            countTime=5;
+        }
         this.character = newCharacter;
         leftEnemyTable.clear();  // Очистка текущих данных
         populateLeftEnemyTable(newCharacter);  // Добавление новых данных
+
     }
 
     public void updateEnemies(List<EnemyRequest> newEnemies) {
