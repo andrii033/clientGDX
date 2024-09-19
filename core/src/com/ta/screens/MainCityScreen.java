@@ -42,7 +42,8 @@ public class MainCityScreen extends InputAdapter implements Screen {
         table.center();
 
         // Character button in the top-left corner
-        TextButton characterButton = new TextButton(characterRequest.getCharacterName(), skin);
+        TextButton characterButton = new TextButton(characterRequest.getCharacterName()+"\n lvl "+characterRequest.getLvl()+
+                " hp: "+characterRequest.getHp(), skin);
         characterButton.getLabel().setFontScale(1.5f);
         table.top().left();
         table.add(characterButton).size(250, 100).expand().fill().padBottom(10);
