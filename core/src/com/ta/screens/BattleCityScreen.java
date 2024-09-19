@@ -27,8 +27,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private final Table leftEnemyTable;
     private final Table rightEnemyTable;
     private final Table turnOrderTable;
-    private TextButton attackButton;
-    private Label label;
+    private final TextButton attackButton;
+    private final Label label;
 
     private DungeonService dungeonService;
 
