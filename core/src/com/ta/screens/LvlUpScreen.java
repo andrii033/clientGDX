@@ -1,36 +1,37 @@
 package com.ta.screens;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
 import com.ta.auth.UserService;
-import com.ta.data.CreateCharacterRequest;
+import com.ta.data.LvlUpRequest;
 
-public class CreateCharacteScreen extends InputAdapter implements Screen {
+public class LvlUpScreen extends InputAdapter implements Screen {
     private Stage stage;
     private Skin skin;
     private final ClientGDX game;
+    private final LvlUpRequest request;
     private final UserService userService;
-    private Integer points;
-    private Integer str;
-    private Integer agi;
-    private Integer inte;
 
-    public CreateCharacteScreen(ClientGDX game) {
+    int pointsMain;
+    int str;
+    int agi;
+    int inte;
+
+    public LvlUpScreen(ClientGDX game, LvlUpRequest lvlUpRequest) {
         this.game = game;
-        userService = new UserService(game);
-        points = 3;
-        str=0;
-        agi=0;
-        inte=0;
+        this.request = lvlUpRequest;
+        this.userService = new UserService(game);
+        pointsMain=request.getUnallocatedMainPoints();
+        str=request.getStr();
+        agi=request.getAgi();
+        inte=request.getInte();
     }
 
     @Override
@@ -44,14 +45,11 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         table.setFillParent(true);
         table.center();
 
-        Label characterNameLabel = new Label("Name ", skin);
-        table.add(characterNameLabel).pad(10);
-        TextField nameTextField = new TextField("", skin);
-        table.add(nameTextField).pad(10);
-        table.row();
-        Label pointsLabel = new Label("Points ", skin);
+
+
+        Label pointsLabel = new Label("Main Points ", skin);
         table.add(pointsLabel).pad(10);
-        Label pointsCountLabel = new Label(points.toString(), skin);
+        Label pointsCountLabel = new Label(String.valueOf(pointsMain), skin);
         table.add(pointsCountLabel).pad(10);
         table.row();
         Label strengthLabel = new Label("Strength ", skin);
@@ -76,18 +74,23 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         table.add(minusInteButton).pad(10);
         table.row();
 
-        TextButton createButton = new TextButton("Create", skin);
-        table.add(createButton).pad(10);
+        TextButton applyButton = new TextButton("Apply", skin);
+        table.add(applyButton).pad(10);
 
-        stage.addActor(table);
+        applyButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                //
+            }
+        });
 
         strengthButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(points>0) {
+                if(pointsMain>0) {
                     str++;
-                    points--;
-                    pointsCountLabel.setText(points.toString());
+                    pointsMain--;
+                    pointsCountLabel.setText(pointsMain+" ");
                     strengthLabel.setText(str);
                 }
             }
@@ -97,19 +100,19 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if(str>0) {
                     str--;
-                    points++;
-                    pointsCountLabel.setText(points.toString());
-                    strengthLabel.setText(str.toString());
+                    pointsMain++;
+                    pointsCountLabel.setText(pointsMain);
+                    strengthLabel.setText(str);
                 }
             }
         });
         agiButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(points>0) {
+                if(pointsMain>0) {
                     agi++;
-                    points--;
-                    pointsCountLabel.setText(points.toString());
+                    pointsMain--;
+                    pointsCountLabel.setText(pointsMain);
                     agiLabel.setText(agi);
                 }
             }
@@ -121,8 +124,8 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if(agi>0) {
                     agi--;
-                    points++;
-                    pointsCountLabel.setText(points.toString());
+                    pointsMain++;
+                    pointsCountLabel.setText(pointsMain);
                     agiLabel.setText(agi);
                 }
             }
@@ -131,10 +134,10 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         inteButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(points>0) {
+                if(pointsMain>0) {
                     inte++;
-                    points--;
-                    pointsCountLabel.setText(points.toString());
+                    pointsMain--;
+                    pointsCountLabel.setText(pointsMain);
                     inteLabel.setText(inte);
                 }
             }
@@ -145,14 +148,13 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 if(inte>0) {
                     inte--;
-                    points++;
-                    pointsCountLabel.setText(points.toString());
+                    pointsMain++;
+                    pointsCountLabel.setText(pointsMain);
                     inteLabel.setText(inte);
                 }
             }
         });
 
-        stage.setKeyboardFocus(nameTextField);
 
         TextButton backButton = new TextButton("Back", skin);
         backButton.setPosition(10, 10);  // Bottom-left corner
@@ -161,40 +163,11 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new ChooseCharacterScreen(game));
+                userService.getCharacterInfo();
             }
         });
 
-        createButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                createCharacter(nameTextField.getText(),str,agi,inte);
-            }
-        });
-
-        // Input listener for Enter key press
-        InputListener enterListener = new InputListener() {
-            @Override
-            public boolean keyDown(InputEvent event, int keycode) {
-                if (keycode == Input.Keys.ENTER) {
-                    createCharacter(nameTextField.getText(),str,agi,inte);
-                    return true;
-                }
-                return false;
-            }
-        };
-
-        nameTextField.addListener(enterListener);
-    }
-
-    private void createCharacter(String name, Integer str, Integer agi, Integer inte){
-        CreateCharacterRequest characterRequest = new CreateCharacterRequest();
-        characterRequest.setName(name);
-        characterRequest.setStr(str);
-        characterRequest.setAgi(agi);
-        characterRequest.setInte(inte);
-        userService.createCharacter(characterRequest);
-        game.setScreen(new ChooseCharacterScreen(game));
+        stage.addActor(table);
     }
 
     @Override
@@ -204,6 +177,7 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
 
         stage.act(delta);
         stage.draw();
+
     }
 
     @Override

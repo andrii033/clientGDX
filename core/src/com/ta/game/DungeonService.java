@@ -62,7 +62,7 @@ public class DungeonService {
                         if (sum <= 0) {
                             battleCityScreen.timer.stop();
                             UserService userService = new UserService(game);
-                            userService.chooseCharacter(String.valueOf(1));
+                            userService.chooseCharacter(String.valueOf(characterRequest.getId()));
                         } else {
                             // Update the existing screen's data
                             Gdx.app.postRunnable(() -> {

@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.ta.ClientGDX;
+import com.ta.auth.UserService;
 import com.ta.data.CharacterRequest;
 
 public class MainCityScreen extends InputAdapter implements Screen {
@@ -21,10 +22,12 @@ public class MainCityScreen extends InputAdapter implements Screen {
     private TextButton moveButton;
     private ClientGDX game;
     private CharacterRequest characterRequest;
+    private UserService userService;
 
     public MainCityScreen(ClientGDX game, CharacterRequest characterRequest) {
         this.game = game;
         this.characterRequest = characterRequest;
+        this.userService = new UserService(game);
     }
 
     @Override
@@ -47,6 +50,13 @@ public class MainCityScreen extends InputAdapter implements Screen {
         characterButton.getLabel().setFontScale(1.5f);
         table.top().left();
         table.add(characterButton).size(250, 100).expand().fill().padBottom(10);
+        characterButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.log("Character button clicked", characterRequest.getCharacterName());
+                userService.getLvlUp();
+            }
+        });
 
         // City label next to the character button
         Label cityLabel = new Label("MainCity", skin);

@@ -8,10 +8,7 @@ import com.badlogic.gdx.Net.HttpResponseListener;
 import com.badlogic.gdx.utils.*;
 import com.ta.ClientGDX;
 import com.ta.data.*;
-import com.ta.screens.BattleCityScreen;
-import com.ta.screens.ChooseCharacterScreen;
-import com.ta.screens.LoginScreen;
-import com.ta.screens.MainCityScreen;
+import com.ta.screens.*;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -295,6 +292,53 @@ public class UserService {
         });
     }
 
+    public void getCharacterInfo() {
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.GET);
+        httpRequest.setUrl("http://localhost:8080/character/getCharacter");
+        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Authorization", "Bearer " + token);
+
+        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(HttpResponse httpResponse) {
+                String responseString = httpResponse.getResultAsString();
+                Gdx.app.log("chooseCharacter", "Character chosen successfully " + responseString);
+
+                if (responseString == null || responseString.isEmpty()) {
+                    Gdx.app.log("UserService", "Empty or null response received.");
+                    return;
+                }
+
+                try {
+                    Json json = new Json();
+                    CharacterRequest characterRequest = json.fromJson(CharacterRequest.class, responseString);
+
+                    if (characterRequest == null) {
+                        Gdx.app.log("chooseCharacter", "Failed to parse JSON response.");
+                        return;
+                    }
+
+                    Gdx.app.log("chooseCharacter", "Character: " + characterRequest.getCharacterName());
+
+                    Gdx.app.postRunnable(() -> game.setScreen(new MainCityScreen(game, characterRequest)));
+
+                } catch (Exception e) {
+                    Gdx.app.log("chooseCharacter", "Error parsing JSON response", e);
+                }
+            }
+
+            @Override
+            public void failed(Throwable t) {
+                Gdx.app.log("chooseCharacter", "Failed to choose character", t);
+            }
+
+            @Override
+            public void cancelled() {
+                Gdx.app.log("chooseCharacter", "Cancelled choose character");
+            }
+        });
+    }
+
 
     public void moveBattleCity(CharacterRequest character) {
         String userJson = "2";
@@ -357,35 +401,73 @@ public class UserService {
 
 
 
-    public void party() {
-        String userJson = "id"; //исправить потом
+//    public void party() {
+//        String userJson = "id"; //исправить потом
+//
+//        System.out.println("party");
+//
+//        // Create the HTTP request
+//        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
+//        httpRequest.setUrl("http://localhost:8080/party/create");
+//        httpRequest.setHeader("Content-Type", "application/json");
+//        httpRequest.setHeader("Authorization", "Bearer " + token);
+//        httpRequest.setContent(userJson);
+//
+//        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+//            @Override
+//            public void handleHttpResponse(HttpResponse httpResponse) {
+//                int statusCode = httpResponse.getStatus().getStatusCode();
+//                String responseString = httpResponse.getResultAsString();
+//
+//                if (statusCode == 200) {
+//                    try {
+//                        Gdx.app.log("party ", responseString);
+//                        Gdx.app.postRunnable(() -> {
+//                            //game.setScreen(new BattleCityScreen(game, enemies, character));
+//                        });
+//                    } catch (Exception e) {
+//                        Gdx.app.log("party", "Failed to parse response JSON", e);
+//                    }
+//                } else {
+//                    Gdx.app.log("party", "Failed: " + statusCode);
+//                }
+//            }
+//
+//            @Override
+//            public void failed(Throwable t) {
+//
+//            }
+//
+//            @Override
+//            public void cancelled() {
+//
+//            }
+//        });
+//    }
 
-        System.out.println("party");
 
-        // Create the HTTP request
-        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
-        httpRequest.setUrl("http://localhost:8080/party/create");
+    public void getLvlUp(){
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.GET);
+        httpRequest.setUrl("http://localhost:8080/character/lvlup");
         httpRequest.setHeader("Content-Type", "application/json");
         httpRequest.setHeader("Authorization", "Bearer " + token);
-        httpRequest.setContent(userJson);
 
         Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
             @Override
             public void handleHttpResponse(HttpResponse httpResponse) {
                 int statusCode = httpResponse.getStatus().getStatusCode();
                 String responseString = httpResponse.getResultAsString();
-
                 if (statusCode == 200) {
-                    try {
-                        Gdx.app.log("party ", responseString);
-                        Gdx.app.postRunnable(() -> {
-                            //game.setScreen(new BattleCityScreen(game, enemies, character));
-                        });
-                    } catch (Exception e) {
-                        Gdx.app.log("party", "Failed to parse response JSON", e);
+                    try{
+                        Json json = new Json();
+                        JsonReader jsonReader = new JsonReader();
+                        JsonValue jsonValue = jsonReader.parse(responseString);
+                        LvlUpRequest lvlUpRequest = json.readValue(LvlUpRequest.class, jsonValue);
+                        Gdx.app.postRunnable(()->
+                                game.setScreen(new LvlUpScreen(game,lvlUpRequest)));
+                    }catch (Exception e){
+                        Gdx.app.log("getLvlUp", "Failed to parse response JSON", e);
                     }
-                } else {
-                    Gdx.app.log("party", "Failed: " + statusCode);
                 }
             }
 
@@ -400,6 +482,5 @@ public class UserService {
             }
         });
     }
-
 
 }

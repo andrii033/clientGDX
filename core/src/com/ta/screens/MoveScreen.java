@@ -70,6 +70,17 @@ public class MoveScreen extends InputAdapter implements Screen {
                 userService.moveBattleCity(character);
             }
         });
+
+        TextButton backButton = new TextButton("Back", skin);
+        backButton.setPosition(10, 10);  // Bottom-left corner
+        stage.addActor(backButton);
+
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                userService.getCharacterInfo();
+            }
+        });
     }
 
     @Override

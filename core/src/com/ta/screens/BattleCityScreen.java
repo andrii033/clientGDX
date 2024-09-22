@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.Timer;
 import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.ta.ClientGDX;
+import com.ta.auth.UserService;
 import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
 import com.ta.game.DungeonService;
@@ -23,6 +24,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private final Stage stage;
     private final Skin skin;
     private final ClientGDX game;
+    private final UserService userService;
     private final Table rootTable;
     private final Table leftEnemyTable;
     private final Table rightEnemyTable;
@@ -50,6 +52,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         this.character = character;
         this.stage = new Stage(new ScreenViewport());
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
+        this.userService = new UserService(game);
+
         enemyId = Math.toIntExact(enemies.get(0).getId());
 
         // Pass this screen to the UserService
@@ -112,6 +116,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                 }
             }
         }, 1, 1); // Schedule the task to run every second
+
     }
 
     @Override
