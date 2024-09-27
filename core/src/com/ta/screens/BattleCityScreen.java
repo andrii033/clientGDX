@@ -17,8 +17,10 @@ import com.ta.auth.UserService;
 import com.ta.data.CharacterRequest;
 import com.ta.data.EnemyRequest;
 import com.ta.game.DungeonService;
+import lombok.var;
 
 import java.util.List;
+import java.util.Objects;
 
 public class BattleCityScreen extends InputAdapter implements Screen {
     private final Stage stage;
@@ -53,6 +55,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         this.stage = new Stage(new ScreenViewport());
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         this.userService = new UserService(game);
+
 
         enemyId = Math.toIntExact(enemies.get(0).getId());
 
@@ -119,6 +122,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     }
 
+
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
@@ -142,8 +146,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     public void updateEnemies(List<EnemyRequest> newEnemies) {
         this.enemies = newEnemies;
-        rightEnemyTable.clear();  // Очистка текущих данных
-        populateRightEnemyTable(newEnemies);  // Добавление новых данных
+        rightEnemyTable.clear();  // clear data
+        populateRightEnemyTable(newEnemies);  // add new data
     }
 
 
@@ -176,6 +180,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             Label hpLabel = new Label("HP: " + enemy.getHp(), skin);
             Label latestDamLabel = new Label("Latest Damage: " + enemy.getLatestDam(), skin);
 
+
             // Check if this is the currently enlarged enemy
             if (enlargedEnemyId != null && enlargedEnemyId.equals(enemy.getId())) {
                 icon.setSize(100, 100);
@@ -190,6 +195,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                 public void clicked(InputEvent event, float x, float y) {
                     Gdx.app.log("Icon Clicked", "Enemy: " + enemy.getName() + " ID: " + enemy.getId());
                     enemyId = Math.toIntExact(enemy.getId());
+
 
                     if (currentlyEnlargedIcon != null) {
                         currentlyEnlargedIcon.setSize(70, 70);

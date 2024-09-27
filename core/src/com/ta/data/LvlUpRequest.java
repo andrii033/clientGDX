@@ -176,6 +176,4 @@ public class LvlUpRequest {
     public void setMaxMana(int maxMana) {
         this.maxMana = maxMana;
     }
-
-
 }

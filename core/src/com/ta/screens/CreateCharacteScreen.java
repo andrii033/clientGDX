@@ -54,21 +54,27 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
         Label pointsCountLabel = new Label(points.toString(), skin);
         table.add(pointsCountLabel).pad(10);
         table.row();
-        Label strengthLabel = new Label("Strength ", skin);
+        Label strLabel = new Label("Str ", skin);
+        table.add(strLabel).pad(10);
+        Label strengthLabel = new Label("0", skin);
         table.add(strengthLabel).pad(10);
         TextButton strengthButton = new TextButton("+", skin);
         table.add(strengthButton).pad(10);
         TextButton minusStrengthButton = new TextButton("-", skin);
         table.add(minusStrengthButton).pad(10);
         table.row();
-        Label agiLabel = new Label("Agility ", skin);
+        Label agiLabel1 = new Label("Agi", skin);
+        table.add(agiLabel1).pad(10);
+        Label agiLabel = new Label("0", skin);
         table.add(agiLabel).pad(10);
         TextButton agiButton = new TextButton("+", skin);
         table.add(agiButton).pad(10);
         TextButton minusAgiButton = new TextButton("-", skin);
         table.add(minusAgiButton).pad(10);
         table.row();
-        Label inteLabel = new Label("Intelligence ", skin);
+        Label inteLabel1 = new Label("Int", skin);
+        table.add(inteLabel1).pad(10);
+        Label inteLabel = new Label("0", skin);
         table.add(inteLabel).pad(10);
         TextButton inteButton = new TextButton("+", skin);
         table.add(inteButton).pad(10);
@@ -99,7 +105,7 @@ public class CreateCharacteScreen extends InputAdapter implements Screen {
                     str--;
                     points++;
                     pointsCountLabel.setText(points.toString());
-                    strengthLabel.setText(str.toString());
+                    strengthLabel.setText(str);
                 }
             }
         });
