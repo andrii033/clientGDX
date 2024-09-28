@@ -41,7 +41,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private static Image currentlyEnlargedIcon ;
     private Long enlargedEnemyId;
-    private static boolean isIconEnlarged = false;
 
     private Integer enemyId;
 
@@ -81,12 +80,10 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
         if (currentlyEnlargedIcon != null) {
             currentlyEnlargedIcon.setSize(100, 100);
-            isIconEnlarged = true;
         }
 
         stage.addActor(attackButton);
         stage.addActor(label);
-//        stage.addActor(rightEnemyTable);
 
         // Schedule a task to update the UI periodically
         timer = new Timer();
@@ -127,14 +124,12 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         stage.clear();
 
         populateLeftEnemyTable(newCharacter, damage);  // Add new data
-//        stage.addActor(rightEnemyTable);  // Ensure this is added once
         stage.addActor(attackButton);  // Add attack button back
         stage.addActor(label);  // Add label back
     }
 
     public void updateEnemies(List<EnemyRequest> newEnemies) {
         this.enemies = newEnemies;
-//        rightEnemyTable.clear();  // clear data
         populateRightEnemyTable(newEnemies,-1);  // add new data
     }
 
