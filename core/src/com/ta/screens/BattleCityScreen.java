@@ -44,6 +44,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private Integer enemyId;
 
+    boolean hasChanges;
+
     public Timer timer;
     private static int countTime;
 
@@ -108,14 +110,16 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         updateEnemies(enemies);
 
     }
+
     public void updateCharacter(CharacterRequest newCharacter, int damage) {
-        boolean hasChanges = !character.getCharacterName().equals(newCharacter.getCharacterName())
+        hasChanges = !character.getCharacterName().equals(newCharacter.getCharacterName())
                 || character.getHp() != newCharacter.getHp()
                 || character.getMana() != newCharacter.getMana()
                 || character.getExp() != newCharacter.getExp();
 
         if (hasChanges) {
             countTime = 4;
+
         }
 
         this.character = newCharacter;
@@ -130,7 +134,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     public void updateEnemies(List<EnemyRequest> newEnemies) {
         this.enemies = newEnemies;
-        populateRightEnemyTable(newEnemies,-1);  // add new data
+        populateRightEnemyTable(newEnemies);  // add new data
     }
 
 
@@ -179,7 +183,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         });
     }
 
-    private void populateRightEnemyTable(List<EnemyRequest> enemies, int enemyDamage) {
+    private void populateRightEnemyTable(List<EnemyRequest> enemies) {
         for (EnemyRequest enemy : enemies) {
             Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
             Label nameLabel = new Label(enemy.getName() + " " + enemy.getId(), skin);
@@ -200,7 +204,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             stage.addActor(hpLabel);
 
             // Handle damage animation
-            Label damageLabel = new Label(" " + enemyDamage, skin);
+            Label damageLabel = new Label(" " + enemy.getLatestDam(), skin);
             damageLabel.setColor(Color.RED);
             damageLabel.setVisible(false);
             float hpLabelX = hpLabel.getX() + 30;
@@ -210,7 +214,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             // Add the damage label to the stage and animate it
             stage.addActor(damageLabel);
 
-            if (enemyDamage < 0) {
+            if (enemy.getLatestDam() < 0 && hasChanges) {
                 damageLabel.setVisible(true);
                 damageLabel.addAction(Actions.sequence(
                         Actions.parallel(
@@ -218,6 +222,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                                 Actions.fadeOut(1f)
                         ), Actions.removeActor()
                 ));
+                enemy.setLatestDam(0);
             }
 
             // Check if this is the currently enlarged enemy
