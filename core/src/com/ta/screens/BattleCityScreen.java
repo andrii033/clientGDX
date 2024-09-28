@@ -3,10 +3,13 @@ package com.ta.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Timer;
@@ -27,10 +30,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private final Skin skin;
     private final ClientGDX game;
     private final UserService userService;
-    private final Table rootTable;
-    private final Table leftEnemyTable;
-    private final Table rightEnemyTable;
-    private final Table turnOrderTable;
+
     private final TextButton attackButton;
     private final Label label;
 
@@ -56,39 +56,18 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         this.skin = new Skin(Gdx.files.internal("skin/uiskin.json"));
         this.userService = new UserService(game);
 
-
         enemyId = Math.toIntExact(enemies.get(0).getId());
 
         // Pass this screen to the UserService
         dungeonService = new DungeonService( this,game);
 
-        // Initialize tables
-        rootTable = new Table();
-        rootTable.setFillParent(true);
-
-        leftEnemyTable = new Table();
-        rightEnemyTable = new Table();
-        turnOrderTable = new Table();
-
-        // Set table alignments
-        leftEnemyTable.top().left();
-        rightEnemyTable.top().right();
-        turnOrderTable.bottom();
-
-        // Add enemy tables to the root table
-        rootTable.add(leftEnemyTable).expand().top().left().pad(10);
-        rootTable.add(rightEnemyTable).expand().top().right().pad(10).row();
-        rootTable.add(turnOrderTable).expandX().bottom().center().pad(10).colspan(2);
 
         // Add attack button to the root table
         attackButton = new TextButton("Attack", skin);
         attackButton.setSize(200, 100);
-        rootTable.row(); // Move to the next row
-        rootTable.add(attackButton).expand().center().colspan(2).pad(10);
 
         label = new Label("text", skin);
-        rootTable.row();
-        rootTable.add(label).expand().center().colspan(2).pad(10);
+        label.setPosition((float) Gdx.graphics.getWidth() / 2 - label.getWidth()/2 , Gdx.graphics.getHeight()-50);
 
         attackButton.addListener(
                 new ClickListener() {
@@ -105,7 +84,9 @@ public class BattleCityScreen extends InputAdapter implements Screen {
             isIconEnlarged = true;
         }
 
-        stage.addActor(rootTable);
+        stage.addActor(attackButton);
+        stage.addActor(label);
+//        stage.addActor(rightEnemyTable);
 
         // Schedule a task to update the UI periodically
         timer = new Timer();
@@ -126,36 +107,73 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        updateCharacter(character);
+        updateCharacter(character,0);
         updateEnemies(enemies);
 
     }
-    public void updateCharacter(CharacterRequest newCharacter) {
+    public void updateCharacter(CharacterRequest newCharacter, int damage) {
         boolean hasChanges = !character.getCharacterName().equals(newCharacter.getCharacterName())
                 || character.getHp() != newCharacter.getHp()
                 || character.getMana() != newCharacter.getMana()
                 || character.getExp() != newCharacter.getExp();
-        if(hasChanges){
-            countTime=5;
-        }
-        this.character = newCharacter;
-        leftEnemyTable.clear();  // Очистка текущих данных
-        populateLeftEnemyTable(newCharacter);  // Добавление новых данных
 
+        if (hasChanges) {
+            countTime = 4;
+        }
+
+        this.character = newCharacter;
+
+        // Clear any previous actors before populating new ones
+        stage.clear();
+
+        populateLeftEnemyTable(newCharacter, damage);  // Add new data
+//        stage.addActor(rightEnemyTable);  // Ensure this is added once
+        stage.addActor(attackButton);  // Add attack button back
+        stage.addActor(label);  // Add label back
     }
 
     public void updateEnemies(List<EnemyRequest> newEnemies) {
         this.enemies = newEnemies;
-        rightEnemyTable.clear();  // clear data
-        populateRightEnemyTable(newEnemies);  // add new data
+//        rightEnemyTable.clear();  // clear data
+        populateRightEnemyTable(newEnemies,-1);  // add new data
     }
 
 
-    private void populateLeftEnemyTable(CharacterRequest character) {
-        Table enemyRow = new Table();
+    private void populateLeftEnemyTable(CharacterRequest character, int damage) {
         Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
-        Label nameLabel = new Label(character.getCharacterName() + " " + character.getId(), skin);
+        Label nameLabel = new Label(character.getCharacterName() + "  lvl "+character.getLvl(), skin);
         Label hpLabel = new Label("HP: " + character.getHp(), skin);
+
+        icon.setSize(70, 70);
+        icon.setPosition(50, Gdx.graphics.getHeight() - 100);  // Example position
+        nameLabel.setPosition(150, Gdx.graphics.getHeight() - 50);  // Position next to the icon
+        hpLabel.setPosition(150, Gdx.graphics.getHeight() - 80);  // Position below the name label
+
+        // Add UI elements directly to the stage
+        stage.addActor(icon);
+        stage.addActor(nameLabel);
+        stage.addActor(hpLabel);
+
+        // Handle damage animation
+        Label damageLabel = new Label(" " + damage, skin);
+        damageLabel.setColor(Color.RED);
+        damageLabel.setVisible(false);
+        float hpLabelX = hpLabel.getX()+30;
+        float hpLabelY = hpLabel.getY() ;
+        damageLabel.setPosition(hpLabelX, hpLabelY);
+
+        // Add the damage label to the stage and animate it
+        stage.addActor(damageLabel);
+
+        if(damage<0) {
+            damageLabel.setVisible(true);
+            damageLabel.addAction(Actions.sequence(
+                    Actions.parallel(
+                            Actions.moveBy(0, 50, 1f),
+                            Actions.fadeOut(1f)
+                    ), Actions.removeActor()
+            ));
+        }
 
         // Add input listener to the icon
         icon.addListener(new ClickListener() {
@@ -164,22 +182,48 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                 Gdx.app.log("Icon Clicked", "Character: " + character.getCharacterName() + " ID: " + character.getId());
             }
         });
-
-        enemyRow.add(icon).size(70, 70).pad(5);
-        enemyRow.add(nameLabel).pad(5);
-        enemyRow.add(hpLabel).pad(5);
-
-        leftEnemyTable.add(enemyRow).row();
     }
 
-    private void populateRightEnemyTable(List<EnemyRequest> enemies) {
+    private void populateRightEnemyTable(List<EnemyRequest> enemies, int enemyDamage) {
         for (EnemyRequest enemy : enemies) {
-            Table enemyRow = new Table();
             Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
             Label nameLabel = new Label(enemy.getName() + " " + enemy.getId(), skin);
             Label hpLabel = new Label("HP: " + enemy.getHp(), skin);
-            Label latestDamLabel = new Label("Latest Damage: " + enemy.getLatestDam(), skin);
 
+            icon.setSize(70, 70);
+
+            float initialX = Gdx.graphics.getWidth() - 120;
+            float initialY = Gdx.graphics.getHeight() - 100 - (enemies.indexOf(enemy) * 120);
+
+            icon.setPosition(initialX, initialY);
+            nameLabel.setPosition(initialX - 100, initialY + 50);
+            hpLabel.setPosition(initialX - 100, initialY + 20);
+
+            // Add UI elements directly to the stage
+            stage.addActor(icon);
+            stage.addActor(nameLabel);
+            stage.addActor(hpLabel);
+
+            // Handle damage animation
+            Label damageLabel = new Label(" " + enemyDamage, skin);
+            damageLabel.setColor(Color.RED);
+            damageLabel.setVisible(false);
+            float hpLabelX = hpLabel.getX() + 30;
+            float hpLabelY = hpLabel.getY();
+            damageLabel.setPosition(hpLabelX, hpLabelY);
+
+            // Add the damage label to the stage and animate it
+            stage.addActor(damageLabel);
+
+            if (enemyDamage < 0) {
+                damageLabel.setVisible(true);
+                damageLabel.addAction(Actions.sequence(
+                        Actions.parallel(
+                                Actions.moveBy(0, 50, 1f),
+                                Actions.fadeOut(1f)
+                        ), Actions.removeActor()
+                ));
+            }
 
             // Check if this is the currently enlarged enemy
             if (enlargedEnemyId != null && enlargedEnemyId.equals(enemy.getId())) {
@@ -196,7 +240,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                     Gdx.app.log("Icon Clicked", "Enemy: " + enemy.getName() + " ID: " + enemy.getId());
                     enemyId = Math.toIntExact(enemy.getId());
 
-
                     if (currentlyEnlargedIcon != null) {
                         currentlyEnlargedIcon.setSize(70, 70);
                     }
@@ -211,13 +254,6 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                     }
                 }
             });
-
-            enemyRow.add(icon).size(icon.getWidth(), icon.getHeight()).pad(5); // Use icon size
-            enemyRow.add(nameLabel).pad(5);
-            enemyRow.add(hpLabel).pad(5);
-            enemyRow.add(latestDamLabel).pad(5);
-
-            rightEnemyTable.add(enemyRow).row();
         }
     }
 

@@ -19,6 +19,9 @@ public class DungeonService {
     private final BattleCityScreen battleCityScreen;
     private final ClientGDX game;
 
+    static int characterHealth = 0;
+    int characterDamage = 0;
+
     public DungeonService(BattleCityScreen battleCityScreen, ClientGDX game) {
         this.battleCityScreen = battleCityScreen;
         this.game = game;
@@ -39,6 +42,8 @@ public class DungeonService {
             public void handleHttpResponse(Net.HttpResponse httpResponse) {
                 int statusCode = httpResponse.getStatus().getStatusCode();
                 String responseString = httpResponse.getResultAsString();
+
+
 
                 if (statusCode == 200) {
                     try {
@@ -64,9 +69,11 @@ public class DungeonService {
                             UserService userService = new UserService(game);
                             userService.getCharacterInfo();
                         } else {
+                            characterDamage=characterRequest.getHp()-characterHealth;
+                            characterHealth=characterRequest.getHp();
                             // Update the existing screen's data
                             Gdx.app.postRunnable(() -> {
-                                battleCityScreen.updateCharacter(characterRequest);
+                                battleCityScreen.updateCharacter(characterRequest,characterDamage);
                                 battleCityScreen.updateEnemies(enemyRequests);
                             });
                         }
