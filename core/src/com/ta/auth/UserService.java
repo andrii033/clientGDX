@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.*;
 import com.ta.ClientGDX;
 import com.ta.data.*;
 import com.ta.screens.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -479,6 +480,69 @@ public class UserService {
             @Override
             public void cancelled() {
 
+            }
+        });
+    }
+    public void postLvlUp(LvlUpRequest lvlUpRequest){
+        HttpRequest httpRequest = new HttpRequest(HttpMethods.POST);
+        httpRequest.setUrl("http://localhost:8080/character/lvlup");
+        httpRequest.setHeader("Content-Type", "application/json");
+        httpRequest.setHeader("Authorization", "Bearer " + token);
+
+        JSONObject json = new JSONObject();
+        try {
+            json.put("unallocatedMainPoints", lvlUpRequest.getUnallocatedMainPoints());
+            json.put("unallocatedStrPoints", lvlUpRequest.getUnallocatedStrPoints());
+            json.put("unallocatedAgiPoints", lvlUpRequest.getUnallocatedAgiPoints());
+            json.put("unallocatedIntePoints", lvlUpRequest.getUnallocatedIntePoints());
+
+            json.put("str", lvlUpRequest.getStr());
+            json.put("agi", lvlUpRequest.getAgi());
+            json.put("inte", lvlUpRequest.getInte());
+
+            json.put("physicalHarm", lvlUpRequest.getPhysicalHarm());
+            json.put("armorPiercing", lvlUpRequest.getArmorPiercing());
+            json.put("reduceBlockDam", lvlUpRequest.getReduceBlockDam());
+            json.put("maxHealth", lvlUpRequest.getMaxHealth());
+
+            json.put("critChance", lvlUpRequest.getCritChance());
+            json.put("attackSpeed", lvlUpRequest.getAttackSpeed());
+            json.put("avoidance", lvlUpRequest.getAvoidance());
+            json.put("blockChance", lvlUpRequest.getBlockChance());
+
+            json.put("magicDam", lvlUpRequest.getMagicDam());
+            json.put("magicCritChance", lvlUpRequest.getMagicCritChance());
+            json.put("manaRegen", lvlUpRequest.getManaRegen());
+            json.put("maxMana", lvlUpRequest.getMaxMana());
+        } catch (JSONException e) {
+            Gdx.app.log("postLvlUp", "Failed to create JSON payload", e);
+            return;
+        }
+        String jsonString = json.toString();
+        httpRequest.setContent(jsonString);
+
+        Gdx.net.sendHttpRequest(httpRequest, new HttpResponseListener() {
+            @Override
+            public void handleHttpResponse(HttpResponse httpResponse) {
+                int statusCode = httpResponse.getStatus().getStatusCode();
+                String responseString = httpResponse.getResultAsString();
+                if (statusCode == 200) {
+                    try {
+                        getCharacterInfo();
+                    } catch (Exception e) {
+                        Gdx.app.log("postLvlUp", "Failed to parse response JSON", e);
+                    }
+                }
+            }
+
+            @Override
+            public void failed(Throwable t) {
+                Gdx.app.log("postLvlUp", "Request failed", t);
+            }
+
+            @Override
+            public void cancelled() {
+                Gdx.app.log("postLvlUp", "Request cancelled");
             }
         });
     }

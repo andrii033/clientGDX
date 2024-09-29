@@ -265,7 +265,31 @@ public class LvlUpScreen extends InputAdapter implements Screen {
         applyButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                //
+                request.setUnallocatedAgiPoints(unallocatedAgiPoints);
+                request.setUnallocatedStrPoints(unallocatedStrPoints);
+                request.setUnallocatedIntePoints(unallocatedIntePoints);
+                request.setUnallocatedMainPoints(pointsMain);
+                request.setStr(str);
+                request.setAgi(agi);
+                request.setInte(inte);
+                request.setPhysicalHarm(physicalHarm);
+                request.setArmorPiercing(armorPiercing);
+                request.setReduceBlockDam(reduceBlockDam);
+
+                // Set additional request parameters before sending the request
+                request.setMaxHealth(maxHealth);
+                request.setCritChance(critChance);
+                request.setAttackSpeed(attackSpeed);
+                request.setAvoidance(avoidance);
+                request.setBlockChance(blockChance);
+
+                request.setMagicDam(magicDam);
+                request.setMagicCritChance(magicCritChance);
+                request.setManaRegen(manaRegen);
+                request.setMaxMana(maxMana);
+
+                // Send the level-up request
+                userService.postLvlUp(request);
             }
         });
 
