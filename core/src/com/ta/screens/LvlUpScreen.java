@@ -272,12 +272,12 @@ public class LvlUpScreen extends InputAdapter implements Screen {
                 request.setStr(str);
                 request.setAgi(agi);
                 request.setInte(inte);
+
                 request.setPhysicalHarm(physicalHarm);
                 request.setArmorPiercing(armorPiercing);
                 request.setReduceBlockDam(reduceBlockDam);
-
-                // Set additional request parameters before sending the request
                 request.setMaxHealth(maxHealth);
+
                 request.setCritChance(critChance);
                 request.setAttackSpeed(attackSpeed);
                 request.setAvoidance(avoidance);
