@@ -48,6 +48,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     public Timer timer;
     private static int countTime;
+    private static int charMaxHp;
+    private static int hpBar;
 
     public BattleCityScreen(ClientGDX game, CharacterRequest character, List<EnemyRequest> enemies, String token) {
         this.game = game;
@@ -58,10 +60,9 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         this.userService = new UserService(game);
 
         enemyId = Math.toIntExact(enemies.get(0).getId());
-
+        hpBar = 100;
         // Pass this screen to the UserService
         dungeonService = new DungeonService( this,game);
-
 
         // Add attack button to the root table
         attackButton = new TextButton("Attack", skin);
@@ -119,9 +120,10 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
         if (hasChanges) {
             countTime = 4;
-
         }
-
+        if (charMaxHp<newCharacter.getHp()) {
+            charMaxHp = newCharacter.getHp();
+        }
         this.character = newCharacter;
 
         // Clear any previous actors before populating new ones
@@ -140,7 +142,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
     private void populateLeftEnemyTable(CharacterRequest character, int damage) {
         Image icon = new Image(new Texture(Gdx.files.internal("obstacle.png"))); // Placeholder for enemy icon
-        Label nameLabel = new Label(character.getCharacterName() + "  lvl "+character.getLvl(), skin);
+        Label nameLabel = new Label(character.getCharacterName() + "  lvl " + character.getLvl(), skin);
         Label hpLabel = new Label("HP: " + character.getHp(), skin);
 
         icon.setSize(70, 70);
@@ -153,19 +155,39 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         stage.addActor(nameLabel);
         stage.addActor(hpLabel);
 
+        // Create HP bar background (grey or dark)
+        Texture hpBarBgTexture = new Texture(Gdx.files.internal("hp_bar_bg.png"));
+        Image hpBarBg = new Image(hpBarBgTexture);
+        hpBarBg.setSize(100, 10); // Set size of the background bar
+        hpBarBg.setPosition(150, Gdx.graphics.getHeight() - 110); // Position below the HP label
+        stage.addActor(hpBarBg);
+
+        // Create HP bar fill (red)
+        Texture hpBarFillTexture = new Texture(Gdx.files.internal("hp_bar_fill_red.png"));
+        Image hpBarFill = new Image(hpBarFillTexture);
+
+        // Calculate width of the red bar based on percentage of remaining HP
+        if(character.getHp()>0) {
+            float percentage =  ((float) character.getHp() / charMaxHp) * 100;
+            hpBar = (int) (100 * (percentage * 0.01));
+            hpBarFill.setSize(hpBar, 8); // Adjusted size for the fill
+            hpBarFill.setPosition(152, Gdx.graphics.getHeight() - 109); // Adjusted position to center within the background
+            stage.addActor(hpBarFill);
+        }
+
         // Handle damage animation
         Label damageLabel = new Label(" " + damage, skin);
         damageLabel.setColor(Color.RED);
         damageLabel.setFontScale(2.5f);
         damageLabel.setVisible(false);
-        float hpLabelX = hpLabel.getX()+30;
-        float hpLabelY = hpLabel.getY() ;
+        float hpLabelX = hpLabel.getX() + 30;
+        float hpLabelY = hpLabel.getY();
         damageLabel.setPosition(hpLabelX, hpLabelY);
 
         // Add the damage label to the stage and animate it
         stage.addActor(damageLabel);
 
-        if(damage<0) {
+        if (damage < 0) {
             damageLabel.setVisible(true);
             damageLabel.addAction(Actions.sequence(
                     Actions.parallel(
