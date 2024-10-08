@@ -39,7 +39,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     private CharacterRequest character;
     private List<EnemyRequest> enemies;
 
-    private static Image currentlyEnlargedIcon ;
+    private static Image currentlyEnlargedIcon;
     private Long enlargedEnemyId;
 
     private Integer enemyId;
@@ -62,21 +62,21 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         enemyId = Math.toIntExact(enemies.get(0).getId());
         hpBar = 100;
         // Pass this screen to the UserService
-        dungeonService = new DungeonService( this,game);
+        dungeonService = new DungeonService(this, game);
 
         // Add attack button to the root table
         attackButton = new TextButton("Attack", skin);
         attackButton.setSize(200, 100);
 
         label = new Label("text", skin);
-        label.setPosition((float) Gdx.graphics.getWidth() / 2 - label.getWidth()/2 , Gdx.graphics.getHeight()-50);
+        label.setPosition((float) Gdx.graphics.getWidth() / 2 - label.getWidth() / 2, Gdx.graphics.getHeight() - 50);
 
         attackButton.addListener(
                 new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         // Call fight method with the current screen instance
-                        dungeonService.fight(String.valueOf(enemyId),token);
+                        dungeonService.fight(String.valueOf(enemyId), token);
                     }
                 }
         );
@@ -93,8 +93,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         timer.scheduleTask(new Task() {
             @Override
             public void run() {
-                dungeonService.fight(String.valueOf(enemyId),token);
-                if(countTime>=0) {
+                dungeonService.fight(String.valueOf(enemyId), token);
+                if (countTime >= 0) {
                     label.setText("time: " + countTime);
                     countTime--;
                 }
@@ -107,7 +107,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        updateCharacter(character,0);
+        updateCharacter(character, 0);
         updateEnemies(enemies);
 
     }
@@ -121,7 +121,7 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         if (hasChanges) {
             countTime = 4;
         }
-        if (charMaxHp<newCharacter.getHp()) {
+        if (charMaxHp < newCharacter.getHp()) {
             charMaxHp = newCharacter.getHp();
         }
         this.character = newCharacter;
@@ -167,8 +167,8 @@ public class BattleCityScreen extends InputAdapter implements Screen {
         Image hpBarFill = new Image(hpBarFillTexture);
 
         // Calculate width of the red bar based on percentage of remaining HP
-        if(character.getHp()>0) {
-            float percentage =  ((float) character.getHp() / charMaxHp) * 100;
+        if (character.getHp() > 0) {
+            float percentage = ((float) character.getHp() / charMaxHp) * 100;
             hpBar = (int) (100 * (percentage * 0.01));
             hpBarFill.setSize(hpBar, 8); // Adjusted size for the fill
             hpBarFill.setPosition(152, Gdx.graphics.getHeight() - 109); // Adjusted position to center within the background
@@ -186,6 +186,25 @@ public class BattleCityScreen extends InputAdapter implements Screen {
 
         // Add the damage label to the stage and animate it
         stage.addActor(damageLabel);
+
+
+// Create Experience bar background (grey or dark)
+        Texture expBarBgTexture = new Texture(Gdx.files.internal("exp_bar_bg.png"));
+        Image expBarBg = new Image(expBarBgTexture);
+        expBarBg.setSize(100, 10); // Set size of the background bar
+        expBarBg.setPosition(150, Gdx.graphics.getHeight() - 130); // Position below the HP bar
+        stage.addActor(expBarBg);
+
+// Create Experience bar fill (blue)
+        Texture expBarFillTexture = new Texture(Gdx.files.internal("exp_bar_fill_blue.png"));
+        Image expBarFill = new Image(expBarFillTexture);
+
+// Calculate width of the blue bar based on percentage of remaining experience
+        float expPercentage = ((float) character.getExp() / (character.getLvl() * 50)) * 100;
+        float expBarWidth = 100 * (expPercentage * 0.01f);
+        expBarFill.setSize(expBarWidth, 8); // Adjusted size for the fill
+        expBarFill.setPosition(152, Gdx.graphics.getHeight() - 129); // Adjusted position to center within the background
+        stage.addActor(expBarFill);
 
         if (damage < 0) {
             damageLabel.setVisible(true);
@@ -257,6 +276,27 @@ public class BattleCityScreen extends InputAdapter implements Screen {
                 icon.setSize(70, 70);
             }
 
+
+// Create HP bar background (grey or dark)
+            Texture hpBarBgTexture = new Texture(Gdx.files.internal("hp_bar_bg.png"));
+            Image hpBarBg = new Image(hpBarBgTexture);
+            hpBarBg.setSize(100, 10); // Set size of the background bar
+            hpBarBg.setPosition(initialX - 100, initialY - 10); // Position below the HP label
+            stage.addActor(hpBarBg);
+
+// Create HP bar fill (red)
+            Texture hpBarFillTexture = new Texture(Gdx.files.internal("hp_bar_fill_red.png"));
+            Image hpBarFill = new Image(hpBarFillTexture);
+
+// Calculate width of the red bar based on percentage of remaining HP
+            if (enemy.getHp() > 0) {
+                float percentage = ((float) enemy.getHp() / enemy.getMaxHealth()) * 100;
+                int hpBarWidth = (int) (100 * (percentage * 0.01));
+                hpBarFill.setSize(hpBarWidth, 8); // Adjusted size for the fill
+                hpBarFill.setPosition(initialX - 98, initialY - 9); // Adjusted position to center within the background
+                stage.addActor(hpBarFill);
+            }
+
             // Add input listener to the icon
             icon.addListener(new ClickListener() {
                 @Override
@@ -282,11 +322,9 @@ public class BattleCityScreen extends InputAdapter implements Screen {
     }
 
 
-
-
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.5f, 0.5f,0.5f,  1);
+        Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act(delta);
